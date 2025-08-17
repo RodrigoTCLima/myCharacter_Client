@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,21 +14,22 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
   
   onLogin(): void {
     console.log("let's go to login");
     this.authService.login(this.username, this.password).subscribe({
       next: (response) => {
-        console.log('Login bem-sucedido!');
-        console.log('Se liga no token', response.token);
         localStorage.setItem('auth_token', response.token);
+        console.log('Login bem-sucedido, redirecionando para a homepage');
+
+        this.router.navigate(['']);
       },
       error: (err) => {
-        console.error('Deu erro mano:', err);
+        console.error('Erro no login:', err);
       },
       complete: () => {
-        console.log('acabou!');
+        console.log('Processo de login finalizado!');
       }
     })
   }
