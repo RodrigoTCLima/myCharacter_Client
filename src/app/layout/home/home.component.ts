@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { PrivateDashboardComponent } from "../private-dashboard/private-dashboard.component";
 import { NgIf } from "@angular/common";
 import { PublicLandingComponent } from "../public-landing/public-landing.component";
+import { AuthService } from '../../features/auth/auth.service';
 
 @Component({
   selector: 'app-home',

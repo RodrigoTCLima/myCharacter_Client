@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { HomeComponent } from './pages/home/home.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { publicGuard } from './guards/public.guard';
+import { LoginComponent } from './features/auth/login/login.component';
+import { HomeComponent } from './layout/home/home.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { publicGuard } from './core/guards/public.guard';
 
 export const routes: Routes = [
     {
         path: '',
-        component:HomeComponent
+        component: HomeComponent
     },
     {
         path: 'login',
