@@ -1,0 +1,25 @@
+<h1>Campanhas:</h1>
+@if (pagedCampaigns) {
+    @if(pagedCampaigns.items.length > 0){
+        <h2>Será que to on?</h2>
+        @for (campaign of pagedCampaigns.items; track $index) {
+            <h3>{{campaign.name}}</h3> 
+            <p>{{campaign.description}}</p>
+        }
+        <span> 
+            Página {{ pagedCampaigns.pageNumber }} de {{ pagedCampaigns.totalPages }} 
+        </span>
+        @if(pagedCampaigns.hasPreviousPage){
+            <button (click)="goToPage(params.pageNumber-1)"> << </button>
+        }
+        @if (pagedCampaigns.hasNextPage) {
+            <button (click)="goToPage(params.pageNumber+1)"> >> </button>
+        }
+    }
+    @else {
+        <h3>Não há nenhuma campanha. Que tal criar uma agora?</h3>
+    }
+}
+@else {
+    <h2>carregando...</h2>
+}
