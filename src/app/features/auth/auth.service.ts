@@ -2,10 +2,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-interface LoginResponse {
-  token: string;
-}
+import { LoginResponse } from '../../models/login-response.mode';
 
 @Injectable({
   providedIn: 'root'

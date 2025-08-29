@@ -29,7 +29,7 @@ export class RegisterComponent {
           this.router.navigate(['']);
         },
         error: (err) => {
-          console.log('Ocorreu um erro no processo:', err);
+          console.error('Ocorreu um erro no processo:', err);
         }
       }
     );
