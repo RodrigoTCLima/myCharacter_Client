@@ -27,7 +27,7 @@ export class CampaignListComponent implements OnInit {
         console.log("Tudo certo no loadCampaigns");
       },
       error: (err) => {
-        console.log("Error no loadCampaigns:", err);
+        console.error("Error no loadCampaigns:", err);
       }
     })
   }
