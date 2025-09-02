@@ -2,9 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
-import { Campaign } from './campaign.model';
 import { QueryParameters } from '../../models/query-parameters.model';
 import { PagedResult } from '../../models/paged-result.model';
+import { Campaign, CampaignCreateDto } from '../../models/campaign.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,5 +23,9 @@ export class CampaignsService {
       httpParams = httpParams.set('searchTerm', params.searchTerm);
 
     return this.http.get<PagedResult<Campaign>>(this.apiUrl, { params: httpParams });
+  }
+
+  createCampaigns(newCampaign: CampaignCreateDto): Observable<Campaign>{
+    return this.http.post<Campaign>(this.apiUrl, newCampaign);
   }
 }

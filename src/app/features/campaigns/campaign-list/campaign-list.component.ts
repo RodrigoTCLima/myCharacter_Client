@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CampaignsService } from '../campaigns.service';
 import { PagedResult } from '../../../models/paged-result.model';
-import { Campaign } from '../campaign.model';
+import { Campaign } from '../../../models/campaign.model';
 import { QueryParameters } from '../../../models/query-parameters.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-campaign-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './campaign-list.component.html',
   styleUrl: './campaign-list.component.scss'
 })

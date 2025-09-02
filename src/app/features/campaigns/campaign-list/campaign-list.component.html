@@ -1,10 +1,12 @@
-<h1>Campanhas:</h1>
+<div class="header">
+    <h2>Minhas Campanhas</h2>
+    <a [routerLink]="['/campaigns/new']" class="button primary">Nova Campanha</a>
+</div>
 @if (pagedCampaigns) {
     @if(pagedCampaigns.items.length > 0){
         <h2>Será que to on?</h2>
         @for (campaign of pagedCampaigns.items; track $index) {
             <h3>{{campaign.name}}</h3> 
-            <p>{{campaign.description}}</p>
         }
         <span> 
             Página {{ pagedCampaigns.pageNumber }} de {{ pagedCampaigns.totalPages }} 
