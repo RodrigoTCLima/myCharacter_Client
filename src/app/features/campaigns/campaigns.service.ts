@@ -4,13 +4,13 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { QueryParameters } from '../../models/query-parameters.model';
 import { PagedResult } from '../../models/paged-result.model';
-import { Campaign, CampaignCreateDto } from '../../models/campaign.model';
+import { Campaign, CampaignCreateDto, CampaignDetail } from '../../models/campaign.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CampaignsService {
-  private apiUrl = `${environment.apiUrl}/campaigns`;
+private apiUrl = `${environment.apiUrl}/campaigns`;
 
   constructor(private http: HttpClient) { }
 
@@ -27,5 +27,9 @@ export class CampaignsService {
 
   createCampaigns(newCampaign: CampaignCreateDto): Observable<Campaign>{
     return this.http.post<Campaign>(this.apiUrl, newCampaign);
+  }
+
+  getCampaignById(id: string): Observable<CampaignDetail> {
+    return this.http.get<CampaignDetail>(`${this.apiUrl}/${id}`);
   }
 }

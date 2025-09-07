@@ -7,6 +7,7 @@ import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-
 import { authGuard } from './core/guards/auth.guard';
 import { RpgSystemFormComponent } from './features/admin/rpg-systems/rpg-system-form/rpg-system-form.component';
 import { CampaignFormComponent } from './features/campaigns/campaign-form/campaign-form.component';
+import { CampaignDetailComponent } from './features/campaigns/campaign-detail/campaign-detail.component';
 
 export const routes: Routes = [
     {
@@ -41,6 +42,11 @@ export const routes: Routes = [
     {
         path: 'campaigns/new',
         component: CampaignFormComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'campaigns/:id',
+        component: CampaignDetailComponent,
         canActivate: [authGuard]
     }
 ];

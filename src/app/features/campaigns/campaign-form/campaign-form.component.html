@@ -9,10 +9,10 @@
             <textarea name="description" id="description" [(ngModel)]="campaing.description"></textarea>
         </div>
         <div class="form-group">
-            <select name="rpgSystem">
+            <select name="rpgSystem" [(ngModel)]="campaing.rpgSystemId">
                 <option [value]="0" disabled>Selecione um Sistema</option>
                 @for (rpgSystem of rpgSystems; track rpgSystem.id) {
-                    <option value="rpgSystem.id">{{rpgSystem.name}}</option>
+                    <option value={{rpgSystem.id}}>{{rpgSystem.name}}</option>
                 }
             </select>
         </div>

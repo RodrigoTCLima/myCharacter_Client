@@ -4,9 +4,12 @@
 </div>
 @if (pagedCampaigns) {
     @if(pagedCampaigns.items.length > 0){
-        <h2>Será que to on?</h2>
-        @for (campaign of pagedCampaigns.items; track $index) {
-            <h3>{{campaign.name}}</h3> 
+        @for (campaign of pagedCampaigns.items; track campaign.id) {
+            <a [routerLink]="['/campaigns', campaign.id]" class="campaign-card-link">
+                <div class="campaign-card">
+                    <h3>{{campaign.name}}</h3> 
+                </div>
+            </a>
         }
         <span> 
             Página {{ pagedCampaigns.pageNumber }} de {{ pagedCampaigns.totalPages }} 

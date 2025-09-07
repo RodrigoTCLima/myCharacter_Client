@@ -1,0 +1,39 @@
+@if (campaign) {
+    <header>
+        <h1>Nome: {{campaign.name}}</h1>
+        <p>Descrição: {{campaign.description || 'Esta campanha não tem uma descrição.'}}</p>
+    </header>
+    <hr>
+    <section>
+        @if(campaign.characters.length > 0){
+            <h2>Personagens:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Classe</th>
+                        <th>Nível</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (character of campaign.characters; track character.id) {
+                        <tr>
+                            <td>{{ character.name }}</td>
+                            <td>{{ character.class }}</td>
+                            <td>{{ character.level }}</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        @else {
+            <p>Não há Personagens nessa campanha.</p>
+        }
+    </section>
+}
+@else {
+    <p>Carregando...</p>
+}
+<div>
+    <a [routerLink]="['/']" >Voltar</a>
+</div>

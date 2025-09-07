@@ -1,3 +1,5 @@
+import { Character } from "./character.model";
+
 export interface Campaign {
     id: string;
     name: string;
@@ -9,6 +11,7 @@ export interface CampaignDetail {
     name: string;
     description: string | null;
     rpgSystemId: number;
+    characters: Character[];
 }
 
 export interface CampaignCreateDto{

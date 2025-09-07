@@ -44,6 +44,7 @@ export class CampaignFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.campaing);
     this.campaingsService.createCampaigns(this.campaing).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => console.error('Erro ao criar campanha:', err)
