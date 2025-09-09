@@ -2,6 +2,8 @@
     <header>
         <h1>Nome: {{campaign.name}}</h1>
         <p>Descrição: {{campaign.description || 'Esta campanha não tem uma descrição.'}}</p>
+        <a [routerLink]="['/campaigns/edit/', campaign.id]" class="button">Editar Campanha</a>
+        <button (click)="onDelete()" class="button danger">Excluir Campanha</button>
     </header>
     <hr>
     <section>

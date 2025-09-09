@@ -1,23 +1,23 @@
 <div>
-    <form (ngSubmit)="onSubmit()" #campaignForm="ngForm">
-        <div class="form-group">
-            <label for="name">Nome:</label>
-            <input type="text" name="name" id="name" [(ngModel)]="campaing.name" required>
+    <form (ngSubmit)="onSubmit()" [formGroup]="campaignForm">
+        <div class="form-field">
+            <label for="name">Nome da Campanha:</label>
+            <input type="text" id="name" formControlName="name">
         </div>
         <div class="form-group">
             <label for="description">Descrição:</label>
-            <textarea name="description" id="description" [(ngModel)]="campaing.description"></textarea>
+            <textarea id="description" formControlName="description"></textarea>
         </div>
         <div class="form-group">
-            <select name="rpgSystem" [(ngModel)]="campaing.rpgSystemId">
-                <option [value]="0" disabled>Selecione um Sistema</option>
+            <select id="rpgSystem" formControlName="rpgSystemId">
+                <option [ngValue]="null" disabled>Selecione um Sistema</option>
                 @for (rpgSystem of rpgSystems; track rpgSystem.id) {
-                    <option value={{rpgSystem.id}}>{{rpgSystem.name}}</option>
+                    <option [value]="rpgSystem.id">{{rpgSystem.name}}</option>
                 }
             </select>
         </div>
         <div class="form-actions">
-            <button type="submit" [disabled]="!campaignForm.form.valid" class="button primary">Criar Campanha</button>
+            <button type="submit" [disabled]="!campaignForm.valid" class="button primary">{{ isEditMode ? 'Salvar Alterações' : 'Criar Campanha' }}</button>
             <a [routerLink]="['/']" class="button">Cancelar</a>
         </div>
 

@@ -19,3 +19,8 @@ export interface CampaignCreateDto{
     description: string | null;
     rpgSystemId: number;
 }
+
+export interface CampaignUpdateDto{
+    name: string;
+    description: string | null;
+}

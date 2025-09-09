@@ -48,5 +48,10 @@ export const routes: Routes = [
         path: 'campaigns/:id',
         component: CampaignDetailComponent,
         canActivate: [authGuard]
+    },
+    {
+        path: 'campaigns/edit/:id',
+        component: CampaignFormComponent,
+        canActivate: [authGuard]
     }
 ];

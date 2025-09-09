@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 
 import { CampaignsService } from '../campaigns.service';
@@ -16,11 +16,12 @@ export class CampaignDetailComponent implements OnInit{
 
   constructor(
     private campaignService: CampaignsService,
-    private route: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) { }
   
   ngOnInit(): void {
-    this.route.paramMap.pipe(
+    this.activatedRoute.paramMap.pipe(
       switchMap(params => {
         const id = params.get('id');
         if (id) return this.campaignService.getCampaignById(id);
@@ -35,6 +36,16 @@ export class CampaignDetailComponent implements OnInit{
         console.error('Erro ao buscar Campanha:', err);
       }
     });
+  }
+
+  onDelete() {
+    if (!confirm('Tem certeza que deseja excluir esta campanha?')) return;
+
+    if (this.campaign?.id)
+      this.campaignService.deleteCampaign(this.campaign.id).subscribe({
+        next: () => this.router.navigate(['/']),
+        error: (err) => console.error('Erro ao excluir campanha:', err)
+      })
   }
 
   
