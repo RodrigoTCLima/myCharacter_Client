@@ -1,0 +1,43 @@
+<div class="header">
+    <h2>Meus personagens</h2>
+    <a [routerLink]="['/characters/new']" class="button primary">Novo personagem</a>
+</div>
+@if(pagedCharacters){
+    <input type="text" name="searchTerm" id="searchTerm" [(ngModel)]="params.searchTerm">
+@if(pagedCharacters.items.length > 0){
+<table>
+    <tr>
+        <th>Nome</th>
+        <th>Raça</th>
+        <th>Classe</th>
+        <th>Nível</th>
+    </tr>
+    <tbody>
+        @for (character of pagedCharacters.items; track character.id) {
+        <tr>
+            <td><a [routerLink]="['characters', character.id]">{{ character.name }}</a></td>
+            <td>{{ character.race }}</td>
+            <td>{{ character.class }}</td>
+            <td>{{ character.level }}</td>
+            
+        </tr>
+        }
+    </tbody>
+</table>
+        <span> 
+            Página {{ pagedCharacters.pageNumber }} de {{ pagedCharacters.totalPages }} 
+        </span>
+        @if(pagedCharacters.hasPreviousPage){
+            <button (click)="goToPage(params.pageNumber-1)"> << </button>
+        }
+        @if (pagedCharacters.hasNextPage) {
+            <button (click)="goToPage(params.pageNumber+1)"> >> </button>
+        }
+}
+@else {
+<h3>Não há nenhum personagem. Que tal criar um agora?</h3>
+}
+}
+@else {
+<h2>carregando...</h2>
+}
