@@ -11,3 +11,22 @@ export interface CharacterDetail extends Character {
   rpgSystemId: number;
   campaignId: string | null;
 }
+
+export interface CharacterCreateDto  {
+  name: string;
+  race: string | null;
+  class: string | null;
+  level: number;
+  systemSpecificData: string | null;
+  rpgSystemId: number;
+  campaignId: string | null;
+}
+
+export interface CharacterUpdateDto{
+  name: string;
+  race: string | null;
+  class: string | null;
+  level: number;
+  systemSpecificData: string | null;
+  campaignId: string | null;
+}

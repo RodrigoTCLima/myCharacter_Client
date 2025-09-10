@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { switchMap } from 'rxjs';
 
@@ -15,8 +15,7 @@ export class RegisterComponent {
   password: string = "";
   email: string = "";
 
-  constructor(private authService: AuthService, private router: Router)
-  {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onRegister() {
     this.authService.register(this.username, this.password, this.email).pipe(
@@ -24,14 +23,14 @@ export class RegisterComponent {
         return this.authService.login(this.username, this.password);
       })
     ).subscribe({
-        next: (loginResponse) => {
-          localStorage.setItem('auth_token', loginResponse.token);
-          this.router.navigate(['']);
-        },
-        error: (err) => {
-          console.error('Ocorreu um erro no processo:', err);
-        }
+      next: (loginResponse) => {
+        localStorage.setItem('auth_token', loginResponse.token);
+        this.router.navigate(['']);
+      },
+      error: (err) => {
+        console.error('Ocorreu um erro no processo:', err);
       }
+    }
     );
   }
 }

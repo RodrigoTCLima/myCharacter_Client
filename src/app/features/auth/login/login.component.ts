@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 
@@ -15,7 +15,7 @@ export class LoginComponent {
   password: string = '';
 
   constructor(private authService: AuthService, private router: Router) { }
-  
+
   onLogin(): void {
     console.log("let's go to login");
     this.authService.login(this.username, this.password).subscribe({

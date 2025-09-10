@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CampaignsService } from '../campaigns.service';
-import { RpgSystemService } from '../../admin/rpg-systems/rpg-system.service';
+import { RpgSystemService } from '../../rpg-systems/rpg-system.service';
 import { CampaignCreateDto } from '../../../models/campaign.model';
-import { RpgSystem } from '../../admin/rpg-systems/rpg-system.model';
+import { RpgSystem } from '../../../models/rpg-system.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from "@angular/router";
@@ -39,7 +39,7 @@ export class CampaignFormComponent implements OnInit {
       rpgSystemId: [null, Validators.required]
     });
   }
-  
+
   ngOnInit(): void {
     this.loadRpgSystems();
 
@@ -85,7 +85,7 @@ export class CampaignFormComponent implements OnInit {
     }
   }
 
-  loadRpgSystems(): void{
+  loadRpgSystems(): void {
     this.rpgSystemService.getRpgSystems({
       pageNumber: 1,
       pageSize: 100,
