@@ -1,0 +1,58 @@
+<div class="character-form-container">
+    <!-- FASE 1: Selecionar Sistema -->
+    @if(formState === 'selectingSystem'){
+    <h2>Escolha o Sistema de RPG</h2>
+
+    @if(rpgSystems.length === 0){Carregando sistemas...}
+
+    @if(rpgSystems.length > 0){
+    <ul>
+        @for(system of rpgSystems; track system.id){
+        <li>
+            <button (click)="onSelectRpgSystem(system)">
+                {{ system.name }}
+            </button>
+        </li>
+        }
+    </ul>
+    }
+    }
+
+    <!-- FASE 2: Carregando sistema -->
+    @if(formState === 'loadingSystem'){
+    <h3>Carregando detalhes do sistema...</h3>
+    }
+
+    <!-- FASE 3: Formulário do personagem -->
+    @if(formState === 'buildingForm'){
+    <form [formGroup]="characterForm" (ngSubmit)="onSubmit()">
+        <h2>{{ isEditMode ? 'Editar Personagem' : 'Criar Novo Personagem' }}</h2>
+
+        <button type="button" (click)="cleanRpgSystemSelection()">Trocar Sistema</button>
+
+        <div *ngFor="let section of schema" [formGroupName]="section.name">
+            <h3>{{ section.name }}</h3>
+
+            <div *ngFor="let field of section.fields">
+                <label>{{ field.label }}</label>
+
+                <ng-container [ngSwitch]="field.type">
+                    <input *ngSwitchCase="'text'" type="text" [formControlName]="field.key" />
+                    <input *ngSwitchCase="'number'" type="number" [formControlName]="field.key" />
+                    <textarea *ngSwitchCase="'textarea'" [formControlName]="field.key"></textarea>
+
+                    <select *ngSwitchCase="'select'" [formControlName]="field.key">
+                        <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
+                    </select>
+
+                    <input *ngSwitchCase="'boolean'" type="checkbox" [formControlName]="field.key" />
+                </ng-container>
+            </div>
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting">
+            {{ isEditMode ? 'Salvar Alterações' : 'Criar Personagem' }}
+        </button>
+    </form>
+    }
+</div>

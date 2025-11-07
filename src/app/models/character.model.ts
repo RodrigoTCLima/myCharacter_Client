@@ -8,6 +8,7 @@ export interface Character {
 
 export interface CharacterDetail extends Character {
   systemSpecificData: string | null;
+  characterSheetTemplate: string | null;
   rpgSystemId: number;
   campaignId: string | null;
 }

@@ -8,6 +8,8 @@ import { authGuard } from './core/guards/auth.guard';
 import { RpgSystemFormComponent } from './features/rpg-systems/rpg-system-form/rpg-system-form.component';
 import { CampaignFormComponent } from './features/campaigns/campaign-form/campaign-form.component';
 import { CampaignDetailComponent } from './features/campaigns/campaign-detail/campaign-detail.component';
+import { CharacterListComponent } from './features/characters/character-list/character-list.component';
+import { CharacterFormComponent } from './features/characters/character-form/character-form.component';
 
 export const routes: Routes = [
     {
@@ -53,5 +55,20 @@ export const routes: Routes = [
         path: 'campaigns/edit/:id',
         component: CampaignFormComponent,
         canActivate: [authGuard]
-    }
+    },
+    {
+        path: 'characters',
+        component: CharacterListComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'characters/new',
+        component: CharacterFormComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'characters/edit/:id',
+        component: CharacterFormComponent,
+        canActivate: [authGuard]
+    },
 ];
