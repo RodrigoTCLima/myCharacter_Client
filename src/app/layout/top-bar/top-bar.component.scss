@@ -1,0 +1,54 @@
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #222;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background: #c0392b;
+    }
+  }
+}
+
+.menu {
+  display: flex;
+  background-color: #333;
+  padding: 0.5rem 2rem;
+  gap: 2rem;
+
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+
+    &.active {
+      border-bottom: 2px solid #f39c12;
+    }
+
+    &:hover {
+      color: #f39c12;
+    }
+  }
+}
+
+.content {
+  padding: 2rem;
+  background: #f9f9f9;
+  min-height: calc(100vh - 120px); // compensar topbar + menu
+}

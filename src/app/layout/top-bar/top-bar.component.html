@@ -1,0 +1,19 @@
+<header class="topbar">
+  <h1>My Character</h1>
+  <div class="user-info">
+    @if (user()) {
+      <span class="username"> Olá, {{ user().username }}!</span>
+      <button class="logout-btn" (click)="logout()">Sair</button>
+    }
+    @else {
+      <a [routerLink]="['/login']" class="button">oi</a>
+    }
+  </div>
+
+</header>
+
+<nav class="menu">
+  <a [routerLink]="['/rpg-systems']" class="button">Sistemas</a>
+  <a [routerLink]="['/campaigns']" class="button">Campanhas</a>
+  <a [routerLink]="['/characters']" class="button">Personagens</a>
+</nav>

@@ -13,16 +13,15 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   username: string = '';
   password: string = '';
+  
 
   constructor(private authService: AuthService, private router: Router) { }
 
   onLogin(): void {
     console.log("let's go to login");
     this.authService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        localStorage.setItem('auth_token', response.token);
+      next: () => {
         console.log('Login bem-sucedido, redirecionando para a homepage');
-
         this.router.navigate(['']);
       },
       error: (err) => {
@@ -32,5 +31,10 @@ export class LoginComponent {
         console.log('Processo de login finalizado!');
       }
     })
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

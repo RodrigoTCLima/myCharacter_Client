@@ -10,6 +10,8 @@ import { CampaignFormComponent } from './features/campaigns/campaign-form/campai
 import { CampaignDetailComponent } from './features/campaigns/campaign-detail/campaign-detail.component';
 import { CharacterListComponent } from './features/characters/character-list/character-list.component';
 import { CharacterFormComponent } from './features/characters/character-form/character-form.component';
+import { RpgSystemListComponent } from './features/rpg-systems/rpg-system-list/rpg-system-list.component';
+import { CampaignListComponent } from './features/campaigns/campaign-list/campaign-list.component';
 
 export const routes: Routes = [
     {
@@ -42,6 +44,11 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'rpg-systems',
+        component: RpgSystemListComponent,
+        canActivate: [authGuard]
+    },
+    {
         path: 'campaigns/new',
         component: CampaignFormComponent,
         canActivate: [authGuard]
@@ -54,6 +61,11 @@ export const routes: Routes = [
     {
         path: 'campaigns/edit/:id',
         component: CampaignFormComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'campaigns',
+        component: CampaignListComponent,
         canActivate: [authGuard]
     },
     {
