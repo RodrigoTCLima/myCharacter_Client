@@ -1,54 +1,102 @@
-.topbar {
+@use '../../../styles/variables' as *;
+@use 'sass:color';
+
+.top-bar {
   display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  background-color: #222;
-  color: #fff;
-  padding: 1rem 2rem;
-}
+  padding: $spacing-md $spacing-lg;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border;
+  box-shadow: $box-shadow;
+  position: sticky;
+  position: relative;
+  top: 0;
+  z-index: 1000;
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  &__title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $color-primary;
+  }
 
-  .logout-btn {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
+  &__nav {
+    display: flex;
+    gap: $spacing-lg;
+  }
+
+  &__link {
+    padding: $spacing-xs $spacing-sm;
+    color: $color-text;
+    font-weight: 500;
+    border-radius: $border-radius;
+    transition: $transition;
 
     &:hover {
-      background: #c0392b;
+      background: $color-primary-light;
+      color: white;
     }
-  }
-}
-
-.menu {
-  display: flex;
-  background-color: #333;
-  padding: 0.5rem 2rem;
-  gap: 2rem;
-
-  a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
 
     &.active {
-      border-bottom: 2px solid #f39c12;
-    }
-
-    &:hover {
-      color: #f39c12;
+      background: $color-primary;
+      color: white;
+      font-weight: 600;
     }
   }
-}
 
-.content {
-  padding: 2rem;
-  background: #f9f9f9;
-  min-height: calc(100vh - 120px); // compensar topbar + menu
+  &__user {
+    position: absolute;
+    top: $spacing-md;
+    right: $spacing-lg;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    font-size: 0.9375rem;
+  }
+
+  &__username {
+    color: $color-text-light;
+    font-weight: 500;
+  }
+
+  &__logout,
+  &__login {
+    padding: $spacing-xs $spacing-md;
+    border-radius: $border-radius;
+    font-weight: 500;
+    transition: $transition;
+  }
+
+  &__logout {
+    background: $color-danger;
+    color: white;
+
+    &:hover {
+      background: color.scale($color-danger, $lightness: -20%);
+    }
+  }
+
+  &__login {
+    background: $color-primary;
+    color: white;
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: $spacing-sm;
+
+    &__nav,
+    &__user {
+      position: static; // ← volta ao fluxo
+      margin-top: $spacing-md;
+      justify-content: center;
+    }
+  }
 }

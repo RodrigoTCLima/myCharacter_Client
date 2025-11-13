@@ -1,19 +1,18 @@
-<header class="topbar">
-  <h1>My Character</h1>
-  <div class="user-info">
+<header class="top-bar">
+  <h1 class="top-bar__title">My Character</h1>
+
+  <nav class="top-bar__nav">
+    <a [routerLink]="['/rpg-systems']" class="top-bar__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Sistemas</a>
+    <a [routerLink]="['/campaigns']" class="top-bar__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Campanhas</a>
+    <a [routerLink]="['/characters']" class="top-bar__link" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Personagens</a>
+  </nav>
+
+  <div class="top-bar__user">
     @if (user()) {
-      <span class="username"> Olá, {{ user().username }}!</span>
-      <button class="logout-btn" (click)="logout()">Sair</button>
-    }
-    @else {
-      <a [routerLink]="['/login']" class="button">oi</a>
+    <span class="top-bar__username">Olá, {{ user().username }}!</span>
+    <button class="top-bar__logout" (click)="logout()">Sair</button>
+    } @else {
+    <a [routerLink]="['/login']" class="top-bar__login" >Entrar</a>
     }
   </div>
-
 </header>
-
-<nav class="menu">
-  <a [routerLink]="['/rpg-systems']" class="button">Sistemas</a>
-  <a [routerLink]="['/campaigns']" class="button">Campanhas</a>
-  <a [routerLink]="['/characters']" class="button">Personagens</a>
-</nav>
