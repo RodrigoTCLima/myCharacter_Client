@@ -1,0 +1,36 @@
+// src/styles/_variables.scss
+// ========================================
+// TEMA: ORGANIZAÇÃO DE RPG (MINIMALISTA)
+// ========================================
+
+// CORES
+$color-primary: #2563eb;
+$color-primary-light: #3b82f6;
+$color-primary-dark: #1d4ed8;
+
+$color-success: #16a34a;
+$color-danger: #dc2626;
+$color-warning: #f59e0b;
+
+$color-bg: #f9fafb;
+$color-surface: #ffffff;
+$color-border: #e5e7eb;
+$color-text: #1f2937;
+$color-text-light: #6b7280;
+
+// LAYOUT
+$border-radius: 8px;
+$box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+$transition: all 0.2s ease;
+
+// TIPOGRAFIA
+$font-family: 'Inter', system-ui, -apple-system, sans-serif;
+$font-size-base: 1rem;
+$line-height: 1.6;
+
+// ESPAÇAMENTO
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
