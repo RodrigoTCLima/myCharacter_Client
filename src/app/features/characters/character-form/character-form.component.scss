@@ -87,6 +87,22 @@
             }
 
         }
+
+        &--error {
+            .character-form__input,
+            .character-form__textarea,
+            .character-form__select {
+                border-color: $color-danger;
+                box-shadow: 0 0 0 4px rgba($color-danger, 0.25);
+            }
+        }
+    }
+
+    &__error {
+        display: block;
+        color: $color-danger;
+        font-size: 0.875rem;
+        margin-top: $spacing-xs;
     }
 
     &__input--small {

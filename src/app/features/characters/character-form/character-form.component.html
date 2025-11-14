@@ -40,9 +40,11 @@
                 <div *ngFor="let field of section.fields" class="character-form__field"
                     [class.character-form__field--half]="field.type === 'text' || field.type === 'select'"
                     [class.character-form__field--small]="field.type === 'number'"
-                    [class.character-form__field--inline]="field.type === 'boolean'">
-
+                    [class.character-form__field--inline]="field.type === 'boolean'"
+                    [class.character-form__field--error]="getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched">
+                    @if (field.type !== 'boolean') {
                     <label class="character-form__label">{{ field.label }}</label>
+                    }
 
                     <ng-container [ngSwitch]="field.type">
                         <input *ngSwitchCase="'text'" type="text" [formControlName]="field.key"
@@ -56,8 +58,17 @@
                         </select>
                         <label *ngSwitchCase="'boolean'" class="character-form__checkbox-label">
                             <input type="checkbox" [formControlName]="field.key" class="character-form__checkbox" />
+                            <span>{{ field.label }}</span>
                         </label>
                     </ng-container>
+
+                    @if (getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched) {
+                    <span class="character-form__error">
+                        @if (getControl(section.name, field.key)?.errors?.['required']) {
+                        Este campo é obrigatório.
+                        }
+                    </span>
+                    }
                 </div>
             </div>
         </div>

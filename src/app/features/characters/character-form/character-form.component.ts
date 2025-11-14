@@ -36,7 +36,7 @@ export class CharacterFormComponent implements OnInit {
     private RpgSystemService: RpgSystemService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   // -------------------------------------------------------------
   // 🔹 Ciclo de vida
@@ -166,6 +166,10 @@ export class CharacterFormComponent implements OnInit {
     });
   }
 
+  // Para validação dos campos
+  getControl(sectionName: string, fieldKey: string): any {
+    return (this.characterForm.get(sectionName) as FormGroup)?.get(fieldKey);
+  }
   /**
    * Transforma o objeto nested do form (que contém seções)
    * em um único JSON plano com todos os campos.
