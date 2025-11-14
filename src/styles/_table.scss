@@ -1,0 +1,26 @@
+@use 'variables' as *;
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: $color-surface;
+    box-shadow: $box-shadow;
+    border-radius: $border-radius;
+    overflow: hidden;
+
+    &__th {
+        background: $color-primary;
+        color: white;
+        padding: $spacing-md;
+        text-align: left;
+    }
+
+    &__row:hover {
+        background: #f1f5f9;
+    }
+
+    &__cell {
+        padding: $spacing-md;
+        border-bottom: 1px solid $color-border;
+    }
+}

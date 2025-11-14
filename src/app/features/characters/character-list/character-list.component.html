@@ -1,44 +1,55 @@
-<div class="header">
-    <h2>Meus personagens</h2>
-    <a [routerLink]="['/characters/new']" class="button primary">Novo personagem</a>
-</div>
-@if(pagedCharacters){
-    <input type="text" name="searchTerm" id="searchTerm" [(ngModel)]="params.searchTerm">
-@if(pagedCharacters.items.length > 0){
-<table>
-    <tr>
-        <th>Nome</th>
-        <th>Raça</th>
-        <th>Classe</th>
-        <th>Nível</th>
-    </tr>
-    <tbody>
-        @for (character of pagedCharacters.items; track character.id) {
+<div class="character-list">
+    <div class="character-list__header">
+        <h2 class="character-list__title">Meus personagens</h2>
+        <a [routerLink]="['/characters/new']" class="character-list__new-btn">Novo personagem</a>
+    </div>
+    @if(pagedCharacters){
+    <input type="text" class="character-list__search" [(ngModel)]="params.searchTerm" placeholder="Buscar por nome...">
+    @if(pagedCharacters.items.length > 0){
+    <table class="character-list__table">
         <tr>
-            <td><a [routerLink]="['edit', character.id]">{{ character.name }}</a></td>
-            <td>{{ character.race }}</td>
-            <td>{{ character.class }}</td>
-            <td>{{ character.level }}</td>
-            
+            <th class="character-list__th">Nome</th>
+            <th class="character-list__th">Raça</th>
+            <th class="character-list__th">Classe</th>
+            <th class="character-list__th">Nível</th>
         </tr>
-        }
-    </tbody>
-</table>
-        <span> 
-            Página {{ pagedCharacters.pageNumber }} de {{ pagedCharacters.totalPages }} 
-        </span>
+        <tbody>
+            @for (character of pagedCharacters.items; track character.id) {
+            <tr class="character-list__row">
+                <td class="character-list__cell" data-label="Nome"><a [routerLink]="['edit', character.id]">{{ character.name }}</a></td>
+                <td class="character-list__cell" data-label="Raça">{{ character.race }}</td>
+                <td class="character-list__cell" data-label="Classe">{{ character.class }}</td>
+                <td class="character-list__cell" data-label="Nível">{{ character.level }}</td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <div class="character-list__pagination">
         @if(pagedCharacters.hasPreviousPage){
-            <button (click)="goToPage(params.pageNumber-1)"> << </button>
-        }
-        @if (pagedCharacters.hasNextPage) {
-            <button (click)="goToPage(params.pageNumber+1)"> >> </button>
-        }
-        <a [routerLink]="['/']">Voltar</a>
-}
-@else {
-<h3>Não há nenhum personagem. Que tal criar um agora?</h3>
-}
-}
-@else {
-<h2>carregando...</h2>
-}
+        <button class="character-list__page-btn" (click)="goToPage(params.pageNumber-1)">
+            Anterior </button>
+                }
+                <span class="character-list__page-info">
+                    Página {{ pagedCharacters.pageNumber }} de {{ pagedCharacters.totalPages }}
+                </span>
+                @if (pagedCharacters.hasNextPage) {
+                <button class="character-list__page-btn" (click)="goToPage(params.pageNumber+1)"> Próxima </button>
+                }
+    </div>
+    <a class="character-list__back-link" [routerLink]="['/']">Voltar</a>
+    }
+    @else {
+    <div class="character-list__empty">
+        <h3>Não há nenhum personagem. Que tal criar um agora?</h3>
+    </div>
+    }
+    }
+    @else {
+    <div class="character-list__loading">
+        <h2>Carregando...</h2>
+    </div>
+    }
+</div>
