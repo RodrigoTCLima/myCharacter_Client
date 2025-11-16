@@ -1,30 +1,50 @@
-<div class="header">
-    <h2>Minhas Campanhas</h2>
-    <a [routerLink]="['/campaigns/new']" class="button primary">Nova Campanha</a>
-</div>
-@if (pagedCampaigns) {
-    @if(pagedCampaigns.items.length > 0){
-        @for (campaign of pagedCampaigns.items; track campaign.id) {
-            <a [routerLink]="['/campaigns', campaign.id]" class="campaign-card-link">
-                <div class="campaign-card">
-                    <h3>{{campaign.name}}</h3> 
-                </div>
-            </a>
-        }
-        <span> 
-            Página {{ pagedCampaigns.pageNumber }} de {{ pagedCampaigns.totalPages }} 
-        </span>
-        @if(pagedCampaigns.hasPreviousPage){
-            <button (click)="goToPage(params.pageNumber-1)"> << </button>
-        }
-        @if (pagedCampaigns.hasNextPage) {
-            <button (click)="goToPage(params.pageNumber+1)"> >> </button>
-        }
+<div class="campaign-list">
+
+    <div class="campaign-list__header">
+        <h2 class="campaign-list__title">Minhas Campanhas</h2>
+        <a [routerLink]="['/campaigns/new']" class="campaign-list__new-btn">Nova Campanha</a>
+    </div>
+
+    @if (!pagedCampaigns){
+    <div class="campaign-list__loading">
+        <h2>Carregando campanhas...</h2>
+    </div>
+    }
+    @else if (pagedCampaigns.items.length === 0) {
+    <div class="campaign-list__empty">
+        <h3>Não há nenhuma campanha. Que tal criar uma agora?</h3>
+        <a [routerLink]="['campaigns/new']" class="campaign-list__new-btn">Criar primeira campanha</a>
+    </div>
     }
     @else {
-        <h3>Não há nenhuma campanha. Que tal criar uma agora?</h3>
+    <div class="campaign-list__grid">
+        @for (campaign of pagedCampaigns.items; track campaign.id){
+        <a [routerLink]="['/campaigns', campaign.id]" class="campaign-list__card-link">
+            <article class="campaign-list__card">
+                <h3 class="campaign-list__card-title">{{campaign.name}}</h3>
+            </article>
+        </a>
+        }
+    </div>
+
+
+    <nav class="campaign-list__pagination" aria-label="Paginação das campanhas">
+        @if (pagedCampaigns.hasPreviousPage) {
+        <button class="campaign-list__page-btn" (click)="goToPage(params.pageNumber - 1)">
+            Anterior
+        </button>
+        }
+
+
+        <span class="campaign-list__page-info">
+            Página {{ pagedCampaigns.pageNumber }} de {{ pagedCampaigns.totalPages }}
+        </span>
+
+        @if (pagedCampaigns.hasNextPage) {
+        <button class="campaign-list__page-btn" (click)="goToPage(params.pageNumber + 1)">
+            Próxima
+        </button>
+        }
+    </nav>
     }
-}
-@else {
-    <h2>carregando...</h2>
-}
+</div>
