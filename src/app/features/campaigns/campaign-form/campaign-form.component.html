@@ -1,25 +1,51 @@
-<div>
-    <form (ngSubmit)="onSubmit()" [formGroup]="campaignForm">
-        <div class="form-field">
-            <label for="name">Nome da Campanha:</label>
-            <input type="text" id="name" formControlName="name">
-        </div>
-        <div class="form-group">
-            <label for="description">Descrição:</label>
-            <textarea id="description" formControlName="description"></textarea>
-        </div>
-        <div class="form-group">
-            <select id="rpgSystem" formControlName="rpgSystemId">
-                <option [ngValue]="null" disabled>Selecione um Sistema</option>
-                @for (rpgSystem of rpgSystems; track rpgSystem.id) {
-                    <option [value]="rpgSystem.id">{{rpgSystem.name}}</option>
-                }
-            </select>
-        </div>
-        <div class="form-actions">
-            <button type="submit" [disabled]="!campaignForm.valid" class="button primary">{{ isEditMode ? 'Salvar Alterações' : 'Criar Campanha' }}</button>
-            <a [routerLink]="['/']" class="button">Cancelar</a>
-        </div>
+<div class="campaign-form">
+    <div class="campaign-form__header">
+        <h2 class="campaign-form__title">
+            {{ isEditMode ? 'Editar Campanha' : 'Criar Nova Campanha'}}
+        </h2>
+        <a [routerLink]="['/campaigns']" class="campaign-form__back-link">
+            Voltar para campanhas
+        </a>
+    </div>
 
+    <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()" class="campaign-form__form">
+        <div class="campaign-form__fields">
+            <div class="campaign-form__field campaign-form__field--required"
+                [class.campaigns-form__field--error]="campaignForm.get('name')?.invalid && campaignForm.get('name')?.touched">
+                <label for="name" class="campaign-form__label">Nome da Campanha:</label>
+                <input type="text" id="name" formControlName="name" class="campaign-form__input"
+                    placeholder="Ex:Crônicas de Eldoria">
+                @if (campaignForm.get('name')?.invalid && campaignForm.get('name')?.touched) {
+                <span class="campaign-form__error">O nome é obrigatório.</span>
+                }
+            </div>
+
+            <div class="campaign-form__field">
+                <label for="description" class="campaign-form__label">Descrição:</label>
+                <textarea id="description" formControlName="description" class="campaign-form__textarea" rows="5"
+                    placeholder="Uma campanha épica onde heróis enfrentam dragões ancestrais..."></textarea>
+            </div>
+
+            <div class="campaign-form__field campaign-form__field--required"
+                [class.campaign-form__field--error]="campaignForm.get('rpgSystemId')?.invalid && campaignForm.get('rpgSystemId')?.touched">
+                <label for="rpgSystem" class="campaign-form__label">Sistema de RPG</label>
+                <select id="rpgSystem" formControlName="rpgSystemId" class="campaign-form__select">
+                    <option [ngValue]="null" disabled>Selecione um Sistema</option>
+                    @for (rpgSystem of rpgSystems; track rpgSystem.id) {
+                    <option [value]="rpgSystem.id">{{rpgSystem.name}}</option>
+                    }
+                </select>
+                @if(campaignForm.get('rpgSystemId')?.invalid && campaignForm.get('rpgSystemId')?.touched){
+                <span class="campaign-form__error">Selecione um sistema de RPG.</span>
+                }
+            </div>
+
+            <div class="campaign-form__actions">
+                <button type="submit" [disabled]="!campaignForm.valid"
+                    class="campaign-form__btn campaign-form__btn--primary">
+                    {{ isEditMode ? 'SalvarAlterações' : 'Criar Campanha' }}</button>
+                <a [routerLink]="['/campaigns']" class="campaign-form__btn campaign-form__btn--secondary">Cancelar</a>
+            </div>
+        </div>
     </form>
 </div>
