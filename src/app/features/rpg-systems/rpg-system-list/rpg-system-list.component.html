@@ -1,43 +1,64 @@
-<h1>Sistemas de Rpg:</h1>
-<a [routerLink]="['/admin/rpg-systems/new']">Criar novo sistema</a>
+<div class="rpg-system-list">
+    <div class="rpg-system-list__header">
+        <h2 class="rpg-system-list__title">Sistemas de Rpg</h2>
+        <a [routerLink]="['/admin/rpg-systems/new']" class="rpg-system-list__new-btn">Criar novo sistema</a>
+    </div>
 
-@if(pagedRpgSystem){
-    @if(pagedRpgSystem.items.length > 0){
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (rpgSystem of pagedRpgSystem.items; track $index) {
-                    <tr>
-                        <td>{{ rpgSystem.name }}</td>
-                        <td>{{ rpgSystem.description }}</td>
-                        <td>
-                            <a [routerLink]="['/admin/rpg-systems/edit', rpgSystem.id]" class="button">Editar</a>
-                            <button (click)="deleteRpgSystems(rpgSystem.id)" class="button danger">Excluir</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+
+    @if (!pagedRpgSystem){
+    <div class="rpg-system-list__loading">
+        <p>Carregando Sistemas...</p>
+    </div>
+    }
+    @else if(pagedRpgSystem.items.length === 0){
+    <div class="rpg-system-list__empty">
+        <h3>Nenhum sistema de RPG encontrado.</h3>
+        <a [routerLink]="['/admin/rpg-systems/new']" class="rpg-system-list__new-btn">
+            Criar o primeiro sistema
+        </a>
+    </div>
+    }
+    @else {
+    <table class="rpg-system-list__table">
+        <thead>
+            <tr>
+                <th class="rpg-system-list__th">Nome</th>
+                <th class="rpg-system-list__th">Descrição</th>
+                <th class="rpg-system-list__th">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (rpgSystem of pagedRpgSystem.items; track $index) {
+            <tr class="rpg-system-list__row">
+                <td class="rpg-system-list__cell">{{ rpgSystem.name }}</td>
+                <td class="rpg-system-list__cell">{{ rpgSystem.description }}</td>
+                <td class="rpg-system-list__cell rpg-system-list__cell-actions" data-label="Ações">
+                    <a [routerLink]="['/admin/rpg-systems/edit', rpgSystem.id]"
+                        class="rpg-system-list__btn rpg-system-list__btn--edit" title="Editad Sistema">Editar</a>
+                    <button (click)="deleteRpgSystems(rpgSystem.id)"
+                        class="rpg-system-list__btn rpg-system-list__btn--delete"
+                        title="Excluir sistema">Excluir</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <nav class="rpg-system-list__pagination" aria-label="Paginação de sistemas">
         @if(pagedRpgSystem.hasPreviousPage){
-            <button (click)="goToPage(params.pageNumber-1)"> << </button>
+        <button class="rpg-system-list__page-btn" (click)="goToPage(params.pageNumber-1)">
+            Anterior
+        </button>
         }
-        <span>
+        <span class="rpg-system-list__page-info">
             Página {{ pagedRpgSystem.pageNumber }} de {{ pagedRpgSystem.totalPages }}
         </span>
         @if (pagedRpgSystem.hasNextPage) {
-            <button (click)="goToPage(params.pageNumber+1)"> >> </button>
+        <button class="rpg-system-list__page-btn" (click)="goToPage(params.pageNumber+1)">
+            Próxima
+        </button>
         }
+    </nav>
     }
-    @else {
-        <p>Nenhum Sistema de RPG encontrado.</p>
-    }
-}
-@else {
-    <p>Carregando...</p>
-}
+</div>
