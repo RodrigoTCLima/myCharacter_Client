@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"          # Acessível em http://localhost:4200
+    restart: unless-stopped
+
+networks:
+  mycharacter-network:
+    external: true
