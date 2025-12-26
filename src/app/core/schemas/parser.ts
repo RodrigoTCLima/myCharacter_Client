@@ -1,94 +1,141 @@
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { TemplateSection, TemplateField } from './character-sheet-schema.model';
 
 /**
- * Essa função é o coração do parser.
- * Ela recebe o JSON bruto (string) vindo do backend
- * e opcionalmente os dados de um personagem já existente.
- * Retorna o schema interpretado + o FormGroup reativo.
+ * Resultado com subs para cleanup
  */
-export function buildCharacterForm(templateJson: string | null, characterData?: any): {
-    schema: TemplateSection[];
-    form: FormGroup;
-} {
-    let parsedTemplate: any;
+export interface CharacterFormResult {
+  schema: TemplateSection[];
+  form: FormGroup;
+  subscriptions: Subscription[];
+}
 
-    console.log("aqui está o json não parseado", templateJson);
-    if(templateJson == null){
-        console.error('Erro ao fazer parse do CharacterSheetTemplate, pois está nulo');
-        throw new Error('O template de ficha está vazio.');
-    }
-    // 1️⃣ Tenta converter a string JSON em objeto JS
-    try {
-        parsedTemplate = JSON.parse(templateJson);
-        console.log("aqui eles já parseado:", parsedTemplate);
-    } catch (err) {
-        console.error('Erro ao fazer parse do CharacterSheetTemplate:', err);
-        throw new Error('O template de ficha está inválido ou corrompido.');
-    }
+export function buildCharacterForm(templateJson: string | null, characterData?: any): CharacterFormResult {
+  let parsedTemplate: any;
 
-    // 2️⃣ Valida estrutura mínima (precisa ter "sections")
-    if (!parsedTemplate.sections || !Array.isArray(parsedTemplate.sections)) {
-        throw new Error('O template de ficha precisa conter uma propriedade "sections".');
-    }
+  if (templateJson == null) {
+    throw new Error('Template vazio.');
+  }
 
-    const sections: TemplateSection[] = parsedTemplate.sections;
-    const formSections: Record<string, FormGroup> = {};
+  try {
+    parsedTemplate = JSON.parse(templateJson);
+  } catch (err) {
+    throw new Error('Template inválido.');
+  }
 
-    // 3️⃣ Para cada seção do template (ex: Atributos, Perícias, etc.)
-    for (const section of sections) {
-        const sectionGroup: Record<string, FormControl> = {};
+  if (!parsedTemplate.sections || !Array.isArray(parsedTemplate.sections)) {
+    throw new Error('Precisa de "sections".');
+  }
 
-        // 4️⃣ Para cada campo dentro da seção
-        for (const field of section.fields as TemplateField[]) {
-            const value =
-                (characterData && characterData[field.key] !== undefined)
-                    ? characterData[field.key]
-                    : field.default ?? getDefaultValueForType(field.type);
+  const sections: TemplateSection[] = parsedTemplate.sections;
+  const formSections: Record<string, FormGroup> = {};
+  const subscriptions: Subscription[] = [];
 
-            // 5️⃣ Define as validações dinamicamente
-            const validators = [];
-            if (field.required) validators.push(Validators.required);
-            if (typeof field.min === 'number') validators.push(Validators.min(field.min));
-            if (typeof field.max === 'number') validators.push(Validators.max(field.max));
+  // Cria form base
+  for (const section of sections) {
+    const sectionGroup: Record<string, FormControl> = {};
 
-            // 6️⃣ Cria o FormControl
-            sectionGroup[field.key] = new FormControl(
-                { value, disabled: !!field.disabled },
-                validators
-            );
-        }
+    for (const field of section.fields) {
+      const value = characterData?.[field.key] ?? field.default ?? getDefaultValueForType(field.type);
+      const validators = [];
+      if (field.required) validators.push(Validators.required);
+      if (field.min != null) validators.push(Validators.min(field.min));
+      if (field.max != null) validators.push(Validators.max(field.max));
 
-        // 7️⃣ Cada seção vira um FormGroup
-        formSections[section.name] = new FormGroup(sectionGroup);
+      sectionGroup[field.key] = new FormControl(
+        { value, disabled: !!field.disabled },
+        validators
+      );
     }
 
-    // 8️⃣ Junta tudo em um FormGroup principal
-    const form = new FormGroup(formSections);
+    formSections[section.name] = new FormGroup(sectionGroup);
+  }
 
-    // 9️⃣ Retorna o schema e o formulário
-    return { schema: sections, form };
+  const form = new FormGroup(formSections);
+
+  // Configura cálculos dinâmicos
+  setupCalculations(form, sections, subscriptions);
+
+  return { schema: sections, form, subscriptions };
+}
+
+function getDefaultValueForType(type: string): any {
+  switch (type) {
+    case 'text': case 'textarea': case 'select': return '';
+    case 'number': return 0;
+    case 'boolean': return false;
+    case 'array': return [];
+    default: return null;
+  }
 }
 
 /**
- * Retorna um valor padrão para cada tipo de campo
- * usado quando o campo não tem valor ou default definido.
+ * Configura subs e calcs para todos fields com calculation
  */
-function getDefaultValueForType(type: string): any {
-    switch (type) {
-        case 'text':
-        case 'textarea':
-        case 'select':
-            return '';
-        case 'number':
-            return 0;
-        case 'boolean':
-            return false;
-        case 'array':
-            return [];
-        case 'object':
-            return {};
-        default:
-            return null;
+function setupCalculations(form: FormGroup, sections: TemplateSection[], subs: Subscription[]): void {
+  sections.forEach(section => {
+    section.fields.forEach(field => {
+      if (field.calculation && field.dependencies?.length) {
+        const derivedPath = `${section.name}.${field.key}`;
+        const derivedControl = form.get(derivedPath);
+        if (!derivedControl) return;
+
+        const depPaths = field.dependencies.map(dep => `${findSectionForKey(dep, sections)}.${dep}`);
+        const depControls = depPaths.map(path => form.get(path)).filter(c => c) as FormControl[];
+
+        if (depControls.length !== field.dependencies.length) return;
+
+        // Calc inicial
+        updateDerived(derivedControl, field.calculation, field.dependencies, form, sections);
+
+        // Subs em changes
+        depControls.forEach(ctrl => {
+          const sub = ctrl.valueChanges.subscribe(() => {
+            updateDerived(derivedControl, field.calculation!, field.dependencies!, form, sections);
+          });
+          subs.push(sub);
+        });
+      }
+    });
+  });
+}
+
+/**
+ * Atualiza field derivado com eval da formula
+ */
+function updateDerived(
+  control: AbstractControl,
+  formula: string,
+  deps: string[],
+  form: FormGroup,
+  sections: TemplateSection[]
+): void {
+  const values: Record<string, any> = {};
+  deps.forEach(dep => {
+    const depPath = `${findSectionForKey(dep, sections)}.${dep}`;
+    values[dep] = form.get(depPath)?.value ?? 0;
+  });
+
+  try {
+    // Eval seguro com new Function (escopo só com deps)
+    const calcFn = new Function(...deps, `return ${formula};`);
+    const newValue = calcFn(...deps.map(d => values[d]));
+    control.setValue(newValue, { emitEvent: false });
+  } catch (err) {
+    console.error('Erro na fórmula:', formula, err);
+  }
+}
+
+/**
+ * Encontra seção de um key (cacheável se performance issue)
+ */
+function findSectionForKey(key: string, sections: TemplateSection[]): string {
+  for (const sec of sections) {
+    if (sec.fields.some(f => f.key === key)) {
+      return sec.name;
     }
+  }
+  console.warn(`Seção não encontrada para key: ${key}`);
+  return '';
 }

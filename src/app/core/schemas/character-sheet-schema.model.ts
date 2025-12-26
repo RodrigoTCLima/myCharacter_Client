@@ -13,4 +13,6 @@ export interface TemplateField {
   max?: number;
   required?: boolean;
   disabled?: boolean;
+  calculation?: string;       // Fórmula JS (ex: "Math.floor((strength - 10) / 2)")
+  dependencies?: string[];    // Keys que triggeram recalc
 }

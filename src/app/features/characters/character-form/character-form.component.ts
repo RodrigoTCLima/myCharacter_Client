@@ -3,11 +3,12 @@ import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CharactersService } from '../characters.service';
 import { RpgSystemService } from '../../rpg-systems/rpg-system.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { buildCharacterForm } from '../../../core/schemas/parser';
+import { buildCharacterForm } from '../../../core/schemas/parser'; // Agora retorna {schema, form, subscriptions}
 import { TemplateSection } from '../../../core/schemas/character-sheet-schema.model';
 import { RpgSystem } from '../../../models/rpg-system.model';
 import { CharacterCreateDto, CharacterDetail } from '../../../models/character.model';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs'; // Novo import para Subscription
 
 @Component({
   selector: 'app-character-form',
@@ -31,6 +32,9 @@ export class CharacterFormComponent implements OnInit {
   characterId: string | null = null;
   characterData: CharacterDetail | null = null;
 
+  // Novo: Para cleanup de subscriptions dos cálculos derivados
+  private subscriptions: Subscription[] = [];
+
   constructor(
     private charactersService: CharactersService,
     private RpgSystemService: RpgSystemService,
@@ -41,15 +45,54 @@ export class CharacterFormComponent implements OnInit {
   // -------------------------------------------------------------
   // 🔹 Ciclo de vida
   // -------------------------------------------------------------
-  ngOnInit(): void {
-    this.characterId = this.route.snapshot.paramMap.get('id');
-    this.isEditMode = !!this.characterId;
+ngOnInit(): void {
+  this.characterId = this.route.snapshot.paramMap.get('id');
+  this.isEditMode = !!this.characterId;
 
-    if (this.isEditMode) {
-      this.loadCharacterForEdit();
-    } else {
-      this.loadRpgSystems();
-    }
+  if (this.isEditMode) {
+    this.charactersService.getCharacterById(this.characterId!).subscribe({
+      next: (data) => {
+        this.characterData = data;
+
+        // 1. Busca o sistema RPG usando o rpgSystemId do personagem
+        this.RpgSystemService.getRpgSystemById(data.rpgSystemId).subscribe({
+          next: (system) => {
+            this.selectedSystem = system;
+
+            // 2. Parseia os dados salvos (com proteção contra null)
+            const savedData = data.systemSpecificData 
+              ? JSON.parse(data.systemSpecificData) 
+              : null;
+
+            // 3. Constrói o form com template do sistema e dados salvos
+            const result = buildCharacterForm(system.characterSheetTemplate, savedData);
+
+            this.schema = result.schema;
+            this.characterForm = result.form;
+            this.subscriptions = result.subscriptions;
+
+            this.formState = 'buildingForm';
+          },
+          error: (err) => {
+            console.error('Erro ao carregar sistema do personagem:', err);
+            this.router.navigate(['/characters']);
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Erro ao carregar personagem:', err);
+        this.router.navigate(['/characters']);
+      }
+    });
+  } else {
+    // Modo criação: carrega lista de sistemas
+    this.loadRpgSystems();
+  }
+}
+
+  // Novo: Cleanup para evitar memory leaks
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   // -------------------------------------------------------------
@@ -80,17 +123,15 @@ export class CharacterFormComponent implements OnInit {
     this.formState = 'loadingSystem';
 
     this.RpgSystemService.getRpgSystemById(system.id).subscribe({
-      next: (details) => {
-        const template = details.characterSheetTemplate;
-        const { schema, form } = buildCharacterForm(template);
-        this.schema = schema;
-        this.characterForm = form;
+      next: (system) => {
+        this.selectedSystem = system;
+        const result = buildCharacterForm(system.characterSheetTemplate, null);
+        this.schema = result.schema;
+        this.characterForm = result.form;
+        this.subscriptions = result.subscriptions; // Novo
         this.formState = 'buildingForm';
       },
-      error: (err) => {
-        console.error('Erro ao carregar sistema:', err);
-        this.formState = 'selectingSystem';
-      }
+      error: (err) => console.error('Erro ao carregar sistema:', err)
     });
   }
 
