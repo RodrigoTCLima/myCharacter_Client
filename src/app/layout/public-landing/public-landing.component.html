@@ -1,6 +1,65 @@
-<h1>Bem-vindo ao seu Gerenciador de RPG!</h1>
-<p>Organize suas campanhas, personagens e histórias em um só lugar.</p>
-<div>
-  <a [routerLink]="['login']">Entrar</a>
-  <a [routerLink]="['register']">Criar Conta</a>
+<div class="landing">
+  <header class="landing__header">
+    <h1 class="landing__title">Gerenciador de RPG</h1>
+    <p class="landing__subtitle">Organize campanhas, personagens e histórias com facilidade</p>
+  </header>
+
+  <section class="landing__hero">
+    <div class="landing__hero-content">
+      <h2 class="landing__hero-title">Tudo que você precisa para suas mesas de RPG</h2>
+      <p class="landing__hero-description">
+        Crie fichas dinâmicas, gerencie campanhas, acompanhe personagens e compartilhe com seus jogadores — tudo em um só lugar.
+      </p>
+
+      <div class="landing__actions">
+        <a [routerLink]="['/register']" class="landing__btn landing__btn--primary">
+          Criar Conta Grátis
+        </a>
+        <a [routerLink]="['/login']" class="landing__btn landing__btn--secondary">
+          Já tenho conta
+        </a>
+      </div>
+    </div>
+
+    <div class="landing__hero-image">
+      <!-- Placeholder para imagem futura (pode ser SVG ou ilustração) -->
+      <div class="landing__placeholder-image">
+        <span>🎲 Ficha de Personagem</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing__features">
+    <h2 class="landing__features-title">Por que usar o Gerenciador de RPG?</h2>
+
+    <div class="landing__features-grid">
+      <article class="landing__feature">
+        <div class="landing__feature-icon">📝</div>
+        <h3>Fichas Dinâmicas</h3>
+        <p>Crie fichas personalizadas para qualquer sistema com cálculos automáticos.</p>
+      </article>
+
+      <article class="landing__feature">
+        <div class="landing__feature-icon">🗺️</div>
+        <h3>Campanhas Organizadas</h3>
+        <p>Gerencie sessões, NPCs, mapas e notas em um só lugar.</p>
+      </article>
+
+      <article class="landing__feature">
+        <div class="landing__feature-icon">👥</div>
+        <h3>Compartilhamento Fácil</h3>
+        <p>Convide jogadores e mestres para colaborarem em tempo real.</p>
+      </article>
+
+      <article class="landing__feature">
+        <div class="landing__feature-icon">🎨</div>
+        <h3>Totalmente Personalizável</h3>
+        <p>Adapte o sistema às regras da sua mesa — sem limitações.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="landing__footer">
+    <p>© 2026 Gerenciador de RPG • Feito com ❤️ para mestres e jogadores</p>
+  </footer>
 </div>
