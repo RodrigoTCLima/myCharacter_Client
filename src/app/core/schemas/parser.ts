@@ -1,4 +1,4 @@
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { TemplateSection, TemplateField } from './character-sheet-schema.model';
 
@@ -34,19 +34,45 @@ export function buildCharacterForm(templateJson: string | null, characterData?: 
 
   // Cria form base
   for (const section of sections) {
-    const sectionGroup: Record<string, FormControl> = {};
+    const sectionGroup: Record<string, AbstractControl> = {};
 
     for (const field of section.fields) {
-      const value = characterData?.[field.key] ?? field.default ?? getDefaultValueForType(field.type);
       const validators = [];
       if (field.required) validators.push(Validators.required);
       if (field.min != null) validators.push(Validators.min(field.min));
       if (field.max != null) validators.push(Validators.max(field.max));
 
-      sectionGroup[field.key] = new FormControl(
-        { value, disabled: !!field.disabled },
-        validators
-      );
+      let control: AbstractControl;
+
+      if (field.type === 'array') {
+        // Novo: Cria FormArray tipado para arrays
+        const itemValues = characterData?.[field.key] ?? []; // Dados salvos ou vazio
+        const array = new FormArray<FormControl<any>>([]); // Tipagem corrigida para evitar 'never'
+        const minItems = field.minItems ?? 0;
+
+        // Popula com dados salvos ou defaults
+        const initialCount = Math.max(minItems, itemValues.length);
+        for (let i = 0; i < initialCount; i++) {
+          const itemValue = itemValues[i] ?? getDefaultValueForType(field.itemType ?? 'text');
+          array.push(new FormControl(itemValue));
+        }
+
+        control = array;
+      } else {
+        const value = characterData?.[field.key] ?? field.default ?? getDefaultValueForType(field.type);
+        control = new FormControl(
+          { value, disabled: !!field.disabled },
+          validators
+        );
+      }
+
+      // Novo: Para selects com allowCustom, adiciona control extra
+      if (field.type === 'select' && field.allowCustom) {
+        const customValue = characterData?.[field.key] !== field.options?.includes(characterData?.[field.key]) ? characterData?.[field.key] : '';
+        sectionGroup[field.key + '_custom'] = new FormControl(customValue);
+      }
+
+      sectionGroup[field.key] = control;
     }
 
     formSections[section.name] = new FormGroup(sectionGroup);
@@ -60,7 +86,7 @@ export function buildCharacterForm(templateJson: string | null, characterData?: 
   return { schema: sections, form, subscriptions };
 }
 
-function getDefaultValueForType(type: string): any {
+export function getDefaultValueForType(type: string): any {
   switch (type) {
     case 'text': case 'textarea': case 'select': return '';
     case 'number': return 0;
@@ -118,10 +144,9 @@ function updateDerived(
   });
 
   try {
-    // Eval seguro com new Function (escopo só com deps)
     const calcFn = new Function(...deps, `return ${formula};`);
     const newValue = calcFn(...deps.map(d => values[d]));
-    control.setValue(newValue, { emitEvent: false });
+    control.setValue(newValue, { emitEvent: true });
   } catch (err) {
     console.error('Erro na fórmula:', formula, err);
   }

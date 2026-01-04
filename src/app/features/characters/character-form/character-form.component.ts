@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { CharactersService } from '../characters.service';
 import { RpgSystemService } from '../../rpg-systems/rpg-system.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { buildCharacterForm } from '../../../core/schemas/parser'; // Agora retorna {schema, form, subscriptions}
-import { TemplateSection } from '../../../core/schemas/character-sheet-schema.model';
+import { buildCharacterForm, getDefaultValueForType } from '../../../core/schemas/parser';
+import { TemplateSection, TemplateField } from '../../../core/schemas/character-sheet-schema.model';
 import { RpgSystem } from '../../../models/rpg-system.model';
 import { CharacterCreateDto, CharacterDetail } from '../../../models/character.model';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs'; // Novo import para Subscription
+import { Subscription } from 'rxjs'; 
 
 @Component({
   selector: 'app-character-form',
@@ -171,6 +171,31 @@ ngOnInit(): void {
     });
   }
 
+  getArray(sectionName: string, fieldKey: string): FormArray {
+    return this.characterForm.get(`${sectionName}.${fieldKey}`) as FormArray;
+  }
+
+addArrayItem(sectionName: string, fieldKey: string): void {
+    const array = this.getArray(sectionName, fieldKey);
+    const field = this.findField(fieldKey); // Ajustado: Usa this.schema
+    const itemType = field.itemType ?? 'text';
+    array.push(new FormControl(getDefaultValueForType(itemType)));
+  }
+
+  removeArrayItem(sectionName: string, fieldKey: string, index: number): void {
+    const array = this.getArray(sectionName, fieldKey);
+    array.removeAt(index);
+  }
+
+  // Novo helper: Encontra field no schema (para itemType, minItems, etc.)
+private findField(fieldKey: string): TemplateField {
+    for (const section of this.schema) {
+      const field = section.fields.find(f => f.key === fieldKey);
+      if (field) return field;
+    }
+    return { type: 'text' } as TemplateField; // Default fallback
+  }
+
   // -------------------------------------------------------------
   // 🔹 Submissão (criação e edição)
   // -------------------------------------------------------------
@@ -220,7 +245,12 @@ ngOnInit(): void {
     for (const sectionKey of Object.keys(formValue)) {
       const section = formValue[sectionKey];
       for (const fieldKey of Object.keys(section)) {
-        flat[fieldKey] = section[fieldKey];
+        // Novo: Para custom selects, usa _custom se value === 'custom'
+        if (section[fieldKey] === 'custom' && section[fieldKey + '_custom'] != null) {
+          flat[fieldKey] = section[fieldKey + '_custom'];
+        } else {
+          flat[fieldKey] = section[fieldKey];
+        }
       }
     }
     return flat;

@@ -1,81 +1,106 @@
 <div class="character-form">
-    <!-- FASE 1: Selecionar Sistema -->
-    @if(formState === 'selectingSystem'){
-    <h2 class="character-form__title">Escolha o Sistema de RPG</h2>
+  <!-- FASE 1: Selecionar Sistema -->
+  @if(formState === 'selectingSystem'){
+  <h2 class="character-form__title">Escolha o Sistema de RPG</h2>
 
-    @if(rpgSystems.length === 0){
-    <p class="character-form__loading">Carregando sistemas...</p>
+  @if(rpgSystems.length === 0){
+  <p class="character-form__loading">Carregando sistemas...</p>
+  }
+
+  @if(rpgSystems.length > 0){
+  <ul class="character-form__system-list">
+    @for(system of rpgSystems; track system.id){
+    <li class="character-form__system-item">
+      <button class="character-form__system-btn" (click)="onSelectRpgSystem(system)">
+        {{ system.name }}
+      </button>
+    </li>
     }
+  </ul>
+  }
+  }
 
-    @if(rpgSystems.length > 0){
-    <ul class="character-form__system-list">
-        @for(system of rpgSystems; track system.id){
-        <li class="character-form__system-item">
-            <button class="character-form__system-btn" (click)="onSelectRpgSystem(system)">
-                {{ system.name }}
-            </button>
-        </li>
-        }
-    </ul>
-    }
-    }
+  <!-- FASE 2: Carregando sistema -->
+  @if(formState === 'loadingSystem'){
+  <p class="character-form__loading">Carregando detalhes do sistema...</p>
+  }
 
-    <!-- FASE 2: Carregando sistema -->
-    @if(formState === 'loadingSystem'){
-    <p class="character-form__loading">Carregando detalhes do sistema...</p>
-    }
+  <!-- FASE 3: Formulário do personagem -->
+  @if(formState === 'buildingForm'){
+  <form [formGroup]="characterForm" (ngSubmit)="onSubmit()" class="character-form__form">
+    <h2 class="character-form__title">{{ isEditMode ? 'Editar Personagem' : 'Criar Novo Personagem' }}</h2>
 
-    <!-- FASE 3: Formulário do personagem -->
-    @if(formState === 'buildingForm'){
-    <form [formGroup]="characterForm" (ngSubmit)="onSubmit()" class="character-form__form">
-        <h2 class="character-form__title">{{ isEditMode ? 'Editar Personagem' : 'Criar Novo Personagem' }}</h2>
+    <button type="button" class="character-form__btn character-form__btn--secondary"
+      (click)="cleanRpgSystemSelection()">Trocar Sistema</button>
 
-        <button type="button" class="character-form__btn character-form__btn--secondary"
-            (click)="cleanRpgSystemSelection()">Trocar Sistema</button>
+    <div class="character-form__section" *ngFor="let section of schema" [formGroupName]="section.name">
+      <h3 class="character-form__section-title">{{ section.name }}</h3>
 
-        <div class="character-form__section" *ngFor="let section of schema" [formGroupName]="section.name">
-            <h3 class="character-form__section-title">{{ section.name }}</h3>
+      <div class="character-form__fields">
+        <div *ngFor="let field of section.fields" class="character-form__field"
+          [class.character-form__field--half]="field.type === 'number' || field.type === 'boolean'"
+          [class.character-form__field--small]="field.type === 'number' && field.min !== undefined"
+          [class.character-form__field--inline]="field.type === 'boolean'"
+          [class.character-form__field--error]="getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched">
 
-            <div class="character-form__fields">
-                <div *ngFor="let field of section.fields" class="character-form__field"
-                    [class.character-form__field--half]="field.type === 'text' || field.type === 'select'"
-                    [class.character-form__field--small]="field.type === 'number'"
-                    [class.character-form__field--inline]="field.type === 'boolean'"
-                    [class.character-form__field--error]="getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched">
-                    @if (field.type !== 'boolean') {
-                    <label class="character-form__label">{{ field.label }}</label>
-                    }
+          <!-- Label geral para todos fields (não duplicada para boolean) -->
+          <label class="character-form__label" *ngIf="field.type !== 'boolean'">{{ field.label }}</label>
 
-                    <ng-container [ngSwitch]="field.type">
-                        <input *ngSwitchCase="'text'" type="text" [formControlName]="field.key"
-                            class="character-form__input" />
-                        <input *ngSwitchCase="'number'" type="number" [formControlName]="field.key"
-                            class="character-form__input character-form__input--small" />
-                        <textarea *ngSwitchCase="'textarea'" [formControlName]="field.key"
-                            class="character-form__textarea"></textarea>
-                        <select *ngSwitchCase="'select'" [formControlName]="field.key" class="character-form__select">
-                            <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
-                        </select>
-                        <label *ngSwitchCase="'boolean'" class="character-form__checkbox-label">
-                            <input type="checkbox" [formControlName]="field.key" class="character-form__checkbox" />
-                            <span>{{ field.label }}</span>
-                        </label>
-                    </ng-container>
+          <ng-container [ngSwitch]="field.type">
+            <input *ngSwitchCase="'text'" type="text" [formControlName]="field.key" class="character-form__input" />
+            <input *ngSwitchCase="'number'" type="number" [formControlName]="field.key"
+              class="character-form__input character-form__input--small" />
+            <textarea *ngSwitchCase="'textarea'" [formControlName]="field.key" class="character-form__textarea"></textarea>
 
-                    @if (getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched) {
-                    <span class="character-form__error">
-                        @if (getControl(section.name, field.key)?.errors?.['required']) {
-                        Este campo é obrigatório.
-                        }
-                    </span>
-                    }
+            <!-- Select com allowCustom -->
+            <select *ngSwitchCase="'select'" [formControlName]="field.key" class="character-form__select">
+              <option *ngFor="let opt of field.options" [value]="opt">{{ opt }}</option>
+              @if (field.allowCustom) {
+                <option value="custom">Outro</option>
+              }
+            </select>
+            @if (field.allowCustom && getControl(section.name, field.key).value === 'custom') {
+              <input type="text" [formControlName]="field.key + '_custom'" class="character-form__input"
+                placeholder="{{ field.customLabel || 'Especifique' }}" />
+            }
+
+            <!-- Boolean como checkbox (sem label duplicada) -->
+            <label *ngSwitchCase="'boolean'" class="character-form__checkbox-label">
+              <input type="checkbox" [formControlName]="field.key" class="character-form__checkbox" />
+              <span>{{ field.label }}</span>
+            </label>
+
+            <!-- Array render -->
+            <div *ngSwitchCase="'array'" formArrayName="{{ field.key }}" class="character-form__array">
+              @for (item of getArray(section.name, field.key).controls; track $index; let i = $index) {
+                <div class="character-form__array-item">
+                  <input [formControlName]="i" type="{{ field.itemType ?? 'text' }}" class="character-form__input" />
+                  <button type="button" (click)="removeArrayItem(section.name, field.key, i)"
+                    class="character-form__remove-btn"
+                    [disabled]="getArray(section.name, field.key).length <= (field.minItems ?? 0)">Remover</button>
                 </div>
+              }
+              <button type="button" (click)="addArrayItem(section.name, field.key)"
+                class="character-form__add-btn"
+                [disabled]="getArray(section.name, field.key).length >= (field.maxItems ?? 50)">Adicionar</button>
             </div>
-        </div>
+          </ng-container>
 
-        <button type="submit" [disabled]="isSubmitting" class="character-form__btn character-form__btn--primary">
-            {{ isEditMode ? 'Salvar Alterações' : 'Criar Personagem' }}
-        </button>
-    </form>
-    }
+          <!-- Erros -->
+          @if (getControl(section.name, field.key)?.invalid && getControl(section.name, field.key)?.touched) {
+            <span class="character-form__error">
+              @if (getControl(section.name, field.key)?.errors?.['required']) {
+                Este campo é obrigatório.
+              }
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="isSubmitting" class="character-form__btn character-form__btn--primary">
+      {{ isEditMode ? 'Salvar Alterações' : 'Criar Personagem' }}
+    </button>
+  </form>
+  }
 </div>
