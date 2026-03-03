@@ -4,5 +4,6 @@ export interface LoginResponse {
     user: {
         userId: string;
         username: string;
+        roles: string[];
     };
 }

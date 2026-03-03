@@ -45,4 +45,13 @@ export class AuthService {
     localStorage.removeItem('auth_user');
     this.currentUser.set(null);
   }
+
+  hasRole(role: string): boolean {
+    const user = this.currentUser();
+    return user?.roles.includes(role) ?? false;
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
 }
