@@ -1,15 +1,94 @@
-<form (ngSubmit)="onRegister()">
-    <div>
-        <label for="username">Usuário</label>
-        <input id="username" type="text" name="username" [(ngModel)]="username">
-    </div>
-    <div>
-        <label for="password">Senha</label>
-        <input type="password" id="password" name="password" [(ngModel)]="password">
-    </div>
-    <div>
-        <label for="email">Email</label>
-        <input type="text" name="email" id="email" [(ngModel)]="email">
-    </div>
-    <button type="submit">Registrar</button>
-</form>
+<div class="register">
+  <div class="register__container">
+    <header class="register__header">
+      <h1 class="register__title">Criar Conta</h1>
+      <p class="register__subtitle">Comece agora a organizar suas campanhas e personagens</p>
+    </header>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="register__form" novalidate>
+      <!-- Campo Usuário -->
+      <div class="register__field" [class.register__field--error]="usernameControl?.invalid && usernameControl?.touched">
+        <label for="username" class="register__label">Usuário</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          class="register__input"
+          placeholder="Escolha um nome de usuário"
+          required
+          autofocus
+        />
+        @if (usernameControl?.invalid && usernameControl?.touched) {
+          <span class="register__error">
+            @if (usernameControl?.errors?.['required']) { O usuário é obrigatório }
+            @if (usernameControl?.errors?.['minlength']) { Mínimo de 3 caracteres }
+          </span>
+        }
+      </div>
+
+      <!-- Campo Email -->
+      <div class="register__field" [class.register__field--error]="emailControl?.invalid && emailControl?.touched">
+        <label for="email" class="register__label">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="register__input"
+          placeholder="seu@email.com"
+          required
+        />
+        @if (emailControl?.invalid && emailControl?.touched) {
+          <span class="register__error">
+            @if (emailControl?.errors?.['required']) { O email é obrigatório }
+            @if (emailControl?.errors?.['email']) { Email inválido }
+          </span>
+        }
+      </div>
+
+      <!-- Campo Senha -->
+      <div class="register__field" [class.register__field--error]="passwordControl?.invalid && passwordControl?.touched">
+        <label for="password" class="register__label">Senha</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="register__input"
+          placeholder="Crie uma senha segura"
+          required
+        />
+        @if (passwordControl?.invalid && passwordControl?.touched) {
+          <span class="register__error">
+            @if (passwordControl?.errors?.['required']) { A senha é obrigatória }
+            @if (passwordControl?.errors?.['minlength']) { Mínimo de 6 caracteres }
+          </span>
+        }
+      </div>
+
+      <!-- Erro geral (ex: usuário já existe) -->
+      @if (registerError) {
+        <div class="register__error register__error--general">
+          {{ registerError }}
+        </div>
+      }
+
+      <!-- Botão Registrar -->
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading"
+        class="register__btn register__btn--primary"
+      >
+        @if (isLoading) {
+          <span class="register__spinner"></span> Registrando...
+        } @else {
+          Criar Conta
+        }
+      </button>
+    </form>
+
+    <!-- Link para login -->
+    <footer class="register__footer">
+      <p>Já tem conta?</p>
+      <a [routerLink]="['/login']" class="register__link">Entrar agora</a>
+    </footer>
+  </div>
+</div>

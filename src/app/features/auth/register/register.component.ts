@@ -1,37 +1,58 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent {
-  username: string = "";
-  password: string = "";
-  email: string = "";
+export class RegisterComponent implements OnInit {
+  registerForm!: FormGroup;
+  isLoading = false;
+  registerError: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  onRegister() {
-    this.authService.register(this.username, this.password, this.email).pipe(
-      switchMap(() => {
-        return this.authService.login(this.username, this.password);
-      })
+  ngOnInit(): void {
+    this.registerForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  get usernameControl() { return this.registerForm.get('username'); }
+  get emailControl() { return this.registerForm.get('email'); }
+  get passwordControl() { return this.registerForm.get('password'); }
+
+  onRegister(): void {
+    if (this.registerForm.invalid) return;
+
+    this.isLoading = true;
+    this.registerError = null;
+
+    const { username, email, password } = this.registerForm.value;
+
+    this.authService.register(username, password, email).pipe(
+      switchMap(() => this.authService.login(username, password))
     ).subscribe({
-      next: (loginResponse) => {
-        localStorage.setItem('auth_token', loginResponse.token);
-        this.router.navigate(['']);
+      next: () => {
+        this.router.navigate(['/']);
       },
       error: (err) => {
-        console.error('Ocorreu um erro no processo:', err);
+        this.isLoading = false;
+        this.registerError = err.error?.message || 'Erro ao criar conta. Tente novamente.';
       }
-    }
-    );
+    });
   }
 }
-
