@@ -21,22 +21,27 @@ export class CampaignDetailComponent implements OnInit{
   ) { }
   
   ngOnInit(): void {
-    this.activatedRoute.paramMap.pipe(
-      switchMap(params => {
-        const id = params.get('id');
-        if (id) return this.campaignService.getCampaignById(id);
-        return of(null);
-      })
-    ).subscribe({
-      next: (campaignData) => {
-        this.campaign = campaignData;
-        console.log('Campanha carregada:', this.campaign);
-      },
-      error: (err) => {
-        console.error('Erro ao buscar Campanha:', err);
+  this.activatedRoute.paramMap.pipe(
+    switchMap(params => {
+      const id = params.get('id');
+      if (id) return this.campaignService.getCampaignById(id);
+      return of(null);
+    })
+  ).subscribe({
+    next: (campaignData) => {
+      this.campaign = campaignData;
+      // Garantia: characters sempre array
+      if (this.campaign && !this.campaign.characters) {
+        this.campaign.characters = [];
       }
-    });
-  }
+      console.log('Campanha carregada:', this.campaign);
+    },
+    error: (err) => {
+      console.error('Erro ao buscar Campanha:', err);
+      this.router.navigate(['/']);
+    }
+  });
+}
 
   onDelete() {
     if (!confirm('Tem certeza que deseja excluir esta campanha?')) return;

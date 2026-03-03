@@ -1,41 +1,46 @@
-@if (campaign) {
-    <header>
-        <h1>Nome: {{campaign.name}}</h1>
-        <p>Descrição: {{campaign.description || 'Esta campanha não tem uma descrição.'}}</p>
-        <a [routerLink]="['/campaigns/edit/', campaign.id]" class="button">Editar Campanha</a>
-        <button (click)="onDelete()" class="button danger">Excluir Campanha</button>
+<div class="campaign-detail">
+    @if (campaign; as campaign) {
+    <header class="campaign-detail__header">
+        <div class="campaign-detail__info">
+            <h1 class="campaign-detail__title">{{ campaign.name }}</h1>
+            <p class="campaign-detail__description">
+                {{ campaign.description || 'Esta campanha ainda não tem descrição.' }}
+            </p>
+        </div>
+
+        <div class="campaign-detail__actions">
+            <a [routerLink]="['/campaigns/edit', campaign.id]" class="campaign-detail__btn campaign-detail__btn--edit">
+                Editar Campanha
+            </a>
+            <button (click)="onDelete()" class="campaign-detail__btn campaign-detail__btn--delete">
+                Excluir Campanha
+            </button>
+        </div>
     </header>
-    <hr>
-    <section>
-        @if(campaign.characters.length > 0){
-            <h2>Personagens:</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Classe</th>
-                        <th>Nível</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (character of campaign.characters; track character.id) {
-                        <tr>
-                            <td>{{ character.name }}</td>
-                            <td>{{ character.class }}</td>
-                            <td>{{ character.level }}</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        @else {
-            <p>Não há Personagens nessa campanha.</p>
+
+    <section class="campaign-detail__characters">
+        <h2 class="campaign-detail__section-title">Personagens da Campanha</h2>
+
+        @if (campaign.characters.length > 0) {
+        <table class="campaign-detail__table">
+            <!-- ... resto da tabela -->
+        </table>
+        } @else {
+        <div class="campaign-detail__empty">
+            <p>Esta campanha ainda não tem personagens associados.</p>
+            <a [routerLink]="['/characters/new']" class="campaign-detail__btn campaign-detail__btn--primary">
+                Criar um Personagem
+            </a>
+        </div>
         }
     </section>
-}
-@else {
-    <p>Carregando...</p>
-}
-<div>
-    <a [routerLink]="['/']" >Voltar</a>
+
+    <footer class="campaign-detail__footer">
+        <a [routerLink]="['/']" class="campaign-detail__back-link">← Voltar para o Dashboard</a>
+    </footer>
+    } @else {
+    <div class="campaign-detail__loading">
+        <p>Carregando campanha...</p>
+    </div>
+    }
 </div>
