@@ -1,11 +1,73 @@
-<form (ngSubmit)="onLogin()">
-  <div>
-    <label for="username">Usuário</label>
-    <input id="username" type="text" name="username" [(ngModel)]="username">
+<div class="login">
+  <div class="login__container">
+    <header class="login__header">
+      <h1 class="login__title">Entrar</h1>
+      <p class="login__subtitle">Acesse sua conta para gerenciar suas campanhas e personagens</p>
+    </header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login__form" novalidate>
+      <!-- Campo Usuário -->
+      <div class="login__field" [class.login__field--error]="usernameControl?.invalid && usernameControl?.touched">
+        <label for="username" class="login__label">Usuário</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          class="login__input"
+          placeholder="Seu usuário"
+          required
+          autofocus
+        />
+        @if (usernameControl?.invalid && usernameControl?.touched) {
+          <span class="login__error">
+            O usuário é obrigatório
+          </span>
+        }
+      </div>
+
+      <!-- Campo Senha -->
+      <div class="login__field" [class.login__field--error]="passwordControl?.invalid && passwordControl?.touched">
+        <label for="password" class="login__label">Senha</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="login__input"
+          placeholder="Sua senha"
+          required
+        />
+        @if (passwordControl?.invalid && passwordControl?.touched) {
+          <span class="login__error">
+            A senha é obrigatória
+          </span>
+        }
+      </div>
+
+      <!-- Erro geral (ex: credenciais inválidas) -->
+      @if (loginError) {
+        <div class="login__error login__error--general">
+          {{ loginError }}
+        </div>
+      }
+
+      <!-- Botão Entrar -->
+      <button
+        type="submit"
+        [disabled]="loginForm.invalid || isLoading"
+        class="login__btn login__btn--primary"
+      >
+        @if (isLoading) {
+          <span class="login__spinner"></span> Entrando...
+        } @else {
+          Entrar
+        }
+      </button>
+    </form>
+
+    <!-- Link para registro -->
+    <footer class="login__footer">
+      <p>Não tem conta?</p>
+      <a [routerLink]="['/register']" class="login__link">Criar uma conta agora</a>
+    </footer>
   </div>
-  <div>
-    <label for="password">Senha</label>
-    <input id="password" type="password" name="password" [(ngModel)]="password">
-  </div>
-  <button type="submit">Entrar</button>
-</form>
+</div>

@@ -1,0 +1,162 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/typography' as *;
+@use 'sass:color';
+
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;           
+  justify-content: center;       
+  background: $color-bg;
+  padding: 0;                    // Remove qualquer padding extra
+  margin: 0;                     // Garante que não haja margem indesejada
+
+  &__container {
+    background: $color-surface;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    padding: $spacing-xl;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 0;  
+  }
+
+  @media (max-height: 700px) {
+    align-items: flex-start;
+    padding-top: $spacing-lg;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-lg;    
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-primary;
+    @extend h1;
+  }
+
+  &__subtitle {
+    margin: $spacing-sm 0 0;
+    color: $color-text-light;
+    font-size: 1rem;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;              // Espaçamento interno menor e consistente
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    &--error {
+      .login__input {
+        border-color: $color-danger;
+        box-shadow: 0 0 0 3px rgba($color-danger, 0.2);
+      }
+    }
+  }
+
+  &__label {
+    font-weight: 500;
+    color: $color-text;
+  }
+
+  &__input {
+    padding: $spacing-sm;
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    font-size: 1rem;
+    transition: $transition;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.2);
+    }
+  }
+
+  &__error {
+    color: $color-danger;
+    font-size: 0.875rem;
+    margin-top: $spacing-xs;
+
+    &--general {
+      text-align: center;
+      background: rgba($color-danger, 0.1);
+      padding: $spacing-sm;
+      border-radius: $border-radius;
+      border: 1px solid rgba($color-danger, 0.3);
+      margin: $spacing-sm 0;
+    }
+  }
+
+  &__btn {
+    padding: $spacing-md;
+    border-radius: $border-radius;
+    font-weight: 600;
+    font-size: 1.125rem;
+    transition: $transition;
+    margin-top: $spacing-md;       // Espaço antes do botão
+
+    &--primary {
+      background: $color-primary;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: color.scale($color-primary, $lightness: -15%);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid white;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: $spacing-xs;
+  }
+
+  &__footer {
+    text-align: center;
+    margin-top: $spacing-lg;
+    color: $color-text-light;
+    font-size: 0.9375rem;
+  }
+
+  &__link {
+    color: $color-primary;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  // Ajuste fino em telas muito pequenas
+  @media (max-width: 480px) {
+    &__container {
+      padding: $spacing-lg $spacing-md;
+      margin: $spacing-sm 0;
+    }
+  }
+}
