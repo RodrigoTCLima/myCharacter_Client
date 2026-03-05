@@ -1,23 +1,25 @@
-<!-- rpg-system-form.component.html -->
 <div class="rpg-system-form">
   <h2 class="rpg-system-form__title">
     {{ isEditMode ? 'Editar Sistema de RPG' : 'Criar Novo Sistema de RPG' }}
   </h2>
 
-  <form (ngSubmit)="onSubmit()" #systemForm="ngForm" class="rpg-system-form__form">
+  <!-- Formulário principal com ReactiveForms para o schema visual -->
+  <form [formGroup]="schemaForm" (ngSubmit)="onSubmit()" novalidate class="rpg-system-form__form">
+
+    <!-- Informações Básicas (usando ngModel standalone para evitar conflito) -->
     <div class="rpg-system-form__section">
       <h3 class="rpg-system-form__section-title">Informações Básicas</h3>
-
       <div class="rpg-system-form__fields">
         <div class="rpg-system-form__field">
           <label class="rpg-system-form__label" for="name">Nome do Sistema *</label>
           <input 
             type="text" 
             id="name" 
-            name="name" 
             class="rpg-system-form__input"
             [(ngModel)]="rpgSystemCreateDto.name" 
+            name="systemName"
             required
+            [ngModelOptions]="{standalone: true}"
             placeholder="Ex: Dungeons & Dragons 5ª Edição"
           >
         </div>
@@ -26,50 +28,131 @@
           <label class="rpg-system-form__label" for="description">Descrição</label>
           <textarea 
             id="description" 
-            name="description" 
             class="rpg-system-form__textarea"
             [(ngModel)]="rpgSystemCreateDto.description"
+            name="systemDescription"
+            [ngModelOptions]="{standalone: true}"
             rows="4"
-            placeholder="Breve descrição do sistema, público-alvo, estilo de jogo..."
+            placeholder="Breve descrição do sistema..."
           ></textarea>
         </div>
       </div>
     </div>
 
+    <!-- Seção do Template -->
     <div class="rpg-system-form__section">
-      <h3 class="rpg-system-form__section-title">Template da Ficha de Personagem (JSON)</h3>
-      
-      <div class="rpg-system-form__field">
-        <label class="rpg-system-form__label" for="template">
-          Cole o JSON do schema da ficha aqui
-          <small class="rpg-system-form__hint">
-            (deve seguir a estrutura esperada pelo buildCharacterForm)
-          </small>
-        </label>
-        <textarea 
-          id="template" 
-          name="template" 
-          class="rpg-system-form__textarea rpg-system-form__textarea--large"
-          [(ngModel)]="rpgSystemCreateDto.characterSheetTemplate"
-          rows="12"
-          placeholder='{ "sections": [ { "name": "Atributos", "fields": [...] } ] }'
-        ></textarea>
+      <div class="rpg-system-form__header">
+        <h3 class="rpg-system-form__section-title">Template da Ficha de Personagem</h3>
+        <button type="button" class="rpg-system-form__toggle-btn" (click)="toggleTemplateMode()">
+          Alternar para {{ templateMode === 'visual' ? 'Raw JSON' : 'Editor Visual' }}
+        </button>
       </div>
+
+      <!-- Modo RAW -->
+      <ng-container *ngIf="templateMode === 'raw'">
+        <div class="rpg-system-form__field">
+          <label class="rpg-system-form__label" for="raw-template">JSON do Schema</label>
+          <textarea 
+            id="raw-template" 
+            class="rpg-system-form__textarea rpg-system-form__textarea--large"
+            [(ngModel)]="rawTemplate"
+            name="rawTemplate"
+            [ngModelOptions]="{standalone: true}"
+            rows="12"
+          ></textarea>
+        </div>
+      </ng-container>
+
+      <!-- Modo VISUAL -->
+      <ng-container *ngIf="templateMode === 'visual'">
+        <div formArrayName="sections">
+          @for (sectionCtrl of getSectionsControls(); track $index; let secIndex = $index) {
+            <div [formGroupName]="secIndex" class="rpg-system-form__sub-section">
+              <div class="rpg-system-form__header">
+                <input formControlName="name" class="rpg-system-form__input rpg-system-form__input--section-name" placeholder="Nome da Seção">
+                <button type="button" class="rpg-system-form__btn rpg-system-form__btn--danger" (click)="removeSection(secIndex)">Remover Seção</button>
+              </div>
+
+              <div formArrayName="fields">
+                @for (fieldCtrl of getFieldsControls(secIndex); track $index; let fieldIndex = $index) {
+                  <div [formGroupName]="fieldIndex" class="rpg-system-form__field-group">
+                    <!-- Campos do field -->
+                    <div class="rpg-system-form__field">
+                      <label>Label *</label>
+                      <input formControlName="label" class="rpg-system-form__input" required>
+                    </div>
+                    <div class="rpg-system-form__field">
+                      <label>Key *</label>
+                      <input formControlName="key" class="rpg-system-form__input" required>
+                    </div>
+                    <div class="rpg-system-form__field">
+                      <label>Tipo *</label>
+                      <select formControlName="type" class="rpg-system-form__select">
+                        <option value="text">Text</option>
+                        <option value="number">Number</option>
+                        <option value="boolean">Boolean</option>
+                        <option value="select">Select</option>
+                        <option value="textarea">Textarea</option>
+                        <option value="array">Array</option>
+                      </select>
+                    </div>
+
+                    <!-- Outros campos (resumidos para brevidade, adicione os que faltam) -->
+                    <div class="rpg-system-form__field">
+                      <label>Required</label>
+                      <input type="checkbox" formControlName="required">
+                    </div>
+                    <div class="rpg-system-form__field">
+                      <label>Calculation</label>
+                      <input formControlName="calculation" class="rpg-system-form__input">
+                    </div>
+                    <div class="rpg-system-form__field">
+                      <label>Dependencies</label>
+                      <input formControlName="dependencies" class="rpg-system-form__input">
+                    </div>
+
+                    <!-- Options para select -->
+                    @if (fieldCtrl.get('type')?.value === 'select') {
+                      <div class="rpg-system-form__field">
+                        <label>Allow Custom</label>
+                        <input type="checkbox" formControlName="allowCustom">
+                      </div>
+                      <div formArrayName="options">
+                        @for (optCtrl of getOptionsControls(secIndex, fieldIndex); track $index; let optIndex = $index) {
+                          <div class="rpg-system-form__option-group">
+                            <input [formControlName]="optIndex" class="rpg-system-form__input rpg-system-form__input--option">
+                            <button type="button" class="rpg-system-form__btn rpg-system-form__btn--small" (click)="removeOption(secIndex, fieldIndex, optIndex)">-</button>
+                          </div>
+                        }
+                      </div>
+                      <button type="button" class="rpg-system-form__btn rpg-system-form__btn--small" (click)="addOption(secIndex, fieldIndex)">+ Add Option</button>
+                    }
+
+                    <button type="button" class="rpg-system-form__btn rpg-system-form__btn--danger rpg-system-form__btn--small" (click)="removeField(secIndex, fieldIndex)">Remover Campo</button>
+                  </div>
+                }
+              </div>
+
+              <button type="button" class="rpg-system-form__btn rpg-system-form__btn--secondary" (click)="addField(secIndex)">+ Adicionar Campo</button>
+            </div>
+          }
+        </div>
+
+        <button type="button" class="rpg-system-form__btn rpg-system-form__btn--primary" (click)="addSection()">+ Adicionar Seção</button>
+      </ng-container>
     </div>
 
+    <!-- Ações -->
     <div class="rpg-system-form__actions">
       <button 
-        type="submit" 
+        type="submit"
         class="rpg-system-form__btn rpg-system-form__btn--primary"
-        [disabled]="!systemForm.form.valid || systemForm.form.pristine"
+        [disabled]="!rpgSystemCreateDto.name || (templateMode === 'visual' && schemaForm.invalid)"
       >
         {{ isEditMode ? 'Salvar Alterações' : 'Criar Sistema' }}
       </button>
 
-      <a 
-        [routerLink]="['/admin']" 
-        class="rpg-system-form__btn rpg-system-form__btn--secondary"
-      >
+      <a [routerLink]="['/admin']" class="rpg-system-form__btn rpg-system-form__btn--secondary">
         Cancelar
       </a>
     </div>

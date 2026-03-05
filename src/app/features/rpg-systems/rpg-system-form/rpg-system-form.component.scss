@@ -2,7 +2,7 @@
 @use 'sass:color';
 
 .rpg-system-form {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: $spacing-lg;
   background: $color-surface;
@@ -11,7 +11,8 @@
 
   &__title {
     color: $color-primary;
-    margin-bottom: $spacing-xl;
+    margin: 0 0 $spacing-xl 0;
+    font-size: 2rem;
   }
 
   &__section {
@@ -19,97 +20,148 @@
   }
 
   &__section-title {
-    margin-bottom: $spacing-md;
-    padding-bottom: $spacing-xs;
-    border-bottom: 1px solid $color-border;
+    font-size: 1.4rem;
     color: $color-text;
-    font-size: 1.25rem;
+    margin: 0 0 $spacing-md 0;
+    padding-bottom: $spacing-xs;
+    border-bottom: 2px solid $color-primary-light;
   }
 
-  &__fields {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+
+  &__toggle-btn {
+    background: $color-primary;
+    color: white;
+    border: none;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius;
+    cursor: pointer;
+    font-weight: 500;
+    transition: $transition;
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  &__sub-section {
+    background: rgba($color-primary, 0.03);
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    padding: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    &:hover {
+      border-color: $color-primary-light;
+    }
+  }
+
+  &__field-group {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $spacing-md $spacing-lg;
+    padding: $spacing-md;
+    background: white;
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    margin-bottom: $spacing-md;
+
+    .rpg-system-form__field {
+      min-width: 0; // evita overflow em campos longos
+    }
+  }
+
+  &__option-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-xs;
+
+    input {
+      flex: 1;
+    }
   }
 
   &__field {
     display: flex;
     flex-direction: column;
-  }
+    gap: $spacing-xs;
 
-  &__label {
-    display: block;
-    margin-bottom: $spacing-xs;
-    font-weight: 500;
-    color: $color-text;
-  }
+    label {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: $color-text;
+    }
 
-  &__hint {
-    display: block;
-    margin-top: $spacing-xs;
-    color: $color-text-light;
-    font-size: 0.875rem;
+    input[type="checkbox"] {
+      width: auto;
+      margin-top: $spacing-xs;
+    }
   }
 
   &__input,
+  &__select,
   &__textarea {
-    width: 100%;
     padding: $spacing-sm;
     border: 1px solid $color-border;
     border-radius: $border-radius;
-    font-family: $font-family;
-    font-size: $font-size-base;
-    transition: $transition;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
     &:focus {
       border-color: $color-primary;
-      box-shadow: 0 0 0 4px rgba($color-primary, 0.15);
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.15);
       outline: none;
     }
   }
 
-  &__textarea {
-    resize: vertical;
-    min-height: 120px;
+  &__input--section-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $color-primary;
+    border: none;
+    background: transparent;
+    padding: 0;
 
-    &--large {
-      min-height: 280px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.9375rem;
-      line-height: 1.5;
-      white-space: pre;
+    &:focus {
+      background: rgba($color-primary, 0.05);
+      border-radius: $border-radius;
+      padding: $spacing-xs;
     }
   }
 
-  &__actions {
-    display: flex;
-    gap: $spacing-md;
-    justify-content: flex-end;
-    margin-top: $spacing-xl;
-    padding-top: $spacing-lg;
-    border-top: 1px solid $color-border;
+  &__input--option {
+    font-size: 0.9rem;
   }
 
+  &__textarea--large {
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 200px;
+  }
+
+  // Botões
   &__btn {
-    padding: $spacing-sm $spacing-md;
     border-radius: $border-radius;
+    padding: $spacing-sm $spacing-md;
     font-weight: 500;
     cursor: pointer;
-    transition: $transition;
+    transition: all 0.2s ease;
+    border: none;
 
     &--primary {
       background: $color-primary;
       color: white;
-      border: none;
 
-      &:hover:not(:disabled) {
-        background: color.scale($color-primary, $lightness: -12%);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      &:hover { background: $color-primary-dark; }
     }
 
     &--secondary {
@@ -117,24 +169,64 @@
       border: 1px solid $color-border;
       color: $color-text;
 
-      &:hover {
-        background: $color-primary-light;
-        color: white;
-        border-color: transparent;
-      }
+      &:hover { background: $color-primary-light; color: white; }
+    }
+
+    &--danger {
+      background: $color-danger;
+      color: white;
+
+      &:hover { background: color.scale($color-danger, $lightness: -15%); }
+    }
+
+    &--small {
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.875rem;
     }
   }
 
+  // Ações finais
+  &__actions {
+    display: flex;
+    gap: $spacing-lg;
+    justify-content: flex-end;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $color-border;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+  }
+
+  // Responsividade
   @media (max-width: 768px) {
     padding: $spacing-md;
 
-    &__actions {
-      flex-direction: column;
-      gap: $spacing-sm;
+    &__field-group {
+      grid-template-columns: 1fr;
+      gap: $spacing-md;
     }
 
-    &__btn {
-      width: 100%;
+    &__sub-section {
+      padding: $spacing-sm;
+    }
+
+    &__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  // Destaque para campos condicionais (opcional, mas ajuda muito)
+  [formcontrolname="calculation"],
+  [formcontrolname="dependencies"] {
+    background: rgba($color-warning, 0.08);
+    border-color: $color-warning;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($color-warning, 0.2);
     }
   }
 }
