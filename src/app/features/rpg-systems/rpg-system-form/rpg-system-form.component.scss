@@ -1,0 +1,140 @@
+@use '../../../../styles/variables' as *;
+@use 'sass:color';
+
+.rpg-system-form {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+  background: $color-surface;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+
+  &__title {
+    color: $color-primary;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__section {
+    margin-bottom: $spacing-xl;
+  }
+
+  &__section-title {
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-xs;
+    border-bottom: 1px solid $color-border;
+    color: $color-text;
+    font-size: 1.25rem;
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-weight: 500;
+    color: $color-text;
+  }
+
+  &__hint {
+    display: block;
+    margin-top: $spacing-xs;
+    color: $color-text-light;
+    font-size: 0.875rem;
+  }
+
+  &__input,
+  &__textarea {
+    width: 100%;
+    padding: $spacing-sm;
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    font-family: $font-family;
+    font-size: $font-size-base;
+    transition: $transition;
+
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 4px rgba($color-primary, 0.15);
+      outline: none;
+    }
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 120px;
+
+    &--large {
+      min-height: 280px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      white-space: pre;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+    margin-top: $spacing-xl;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $color-border;
+  }
+
+  &__btn {
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius;
+    font-weight: 500;
+    cursor: pointer;
+    transition: $transition;
+
+    &--primary {
+      background: $color-primary;
+      color: white;
+      border: none;
+
+      &:hover:not(:disabled) {
+        background: color.scale($color-primary, $lightness: -12%);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    &--secondary {
+      background: $color-surface;
+      border: 1px solid $color-border;
+      color: $color-text;
+
+      &:hover {
+        background: $color-primary-light;
+        color: white;
+        border-color: transparent;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+
+    &__actions {
+      flex-direction: column;
+      gap: $spacing-sm;
+    }
+
+    &__btn {
+      width: 100%;
+    }
+  }
+}
